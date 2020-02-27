@@ -1,0 +1,19 @@
+# Intelij ignores
+.idea/
+*.iml
+
+# Build ignores
+target/
+.gradle
+/build/
+
+# OSX ignores
+.DS_Store
+
+# Shade ignores
+dependency-*
+
+# Eclipse ignores
+.classpath
+.project
+.settings

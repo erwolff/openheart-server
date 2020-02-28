@@ -1,10 +1,15 @@
 package art.openhe.model
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import org.jongo.marshall.jackson.oid.MongoId
+import org.jongo.marshall.jackson.oid.MongoObjectId
 
+@JsonInclude(JsonInclude.Include.ALWAYS)
 data class User (
 
-    val id: String? = null,
-    val email: String? = null,
-    val avatar: String? = null
+    @MongoId @MongoObjectId val id: String,
+    val email: String,
+    val password: String,
+    val avatar: String
 
 )

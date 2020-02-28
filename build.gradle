@@ -17,13 +17,23 @@ repositories {
     }
 }
 
-ext.dropwizard_version = '2.0.2'
-ext.novocaine_version = '0.0.1'
+ext.dropwizard_version = '2.0.+'
+ext.novocaine_version = '0.0.+'
+ext.jongo_version = '1.4.+'
+ext.mongodb_version = '3.12.+'
+ext.jackson_kotlin_version = '2.10.+'
+ext.jbcrypt_version = '0.4'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile "io.dropwizard:dropwizard-core:$dropwizard_version"
-    compile "io.novocaine:novocaine:$novocaine_version"
+    compile group: 'io.dropwizard', name: 'dropwizard-core', version: "$dropwizard_version"
+    compile group: 'io.novocaine', name: 'novocaine', version: "$novocaine_version"
+    compile group: 'org.jongo', name: 'jongo', version: "$jongo_version"
+    compile group: 'org.mongodb', name: 'mongo-java-driver', version: "$mongodb_version"
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: "$jackson_kotlin_version"
+    compile group: 'org.mindrot', name: 'jbcrypt', version: "$jbcrypt_version"
+
+
 }
 
 apply plugin: 'application'

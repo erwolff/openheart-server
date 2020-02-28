@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response
 @Produces(MediaType.APPLICATION_JSON)
 @Singleton
 class UserResource
-@Inject constructor(private val handler: UserRequestHandler) {
+@Inject constructor(private val handler: UserRequestHandler): Resource {
 
     @POST
     fun createUser(request: UserRequest): Response =

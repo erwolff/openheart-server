@@ -1,11 +1,20 @@
 package art.openhe
 
 import art.openhe.config.OpenHeartConfig
+import art.openhe.db.collection.Users
 import art.openhe.resource.HealthCheckResource
-import art.openhe.resource.UserResource
+import art.openhe.resource.Resource
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.mongodb.DB
+import com.mongodb.MongoClient
 import io.dropwizard.Application
 import io.dropwizard.setup.Environment
 import io.novocaine.Novocaine
+import org.jongo.Jongo
+import org.jongo.marshall.jackson.JacksonMapper
+import org.reflections.Reflections
+import org.reflections.scanners.SubTypesScanner
+import org.reflections.scanners.TypeAnnotationsScanner
 
 
 fun main(args: Array<String>) {
@@ -18,14 +27,32 @@ class OpenHeartApplication : Application<OpenHeartConfig>() {
         println("Running ${configuration.name}")
         Novocaine.inject(this)
         environment.healthChecks().register(configuration.name, HealthCheckResource())
+        registerResources(environment)
+        createDatastore()
+    }
 
-        /*environment.jersey().register(object : AbstractBinder() {
-            override fun configure() {
-                bind(Novocaine.get(AvatarResource::class.java)).to(AvatarResource::class.java)
-            }
-        })*/
+    /**
+     * Scans for all classes which implement the Resource interface in the resource package
+     * and registers each with jersey
+     */
+    private fun registerResources(environment: Environment) {
+        val reflections = Reflections("art.openhe.resource", SubTypesScanner(false), TypeAnnotationsScanner())
+        val classes: Set<Class<out Resource?>> = reflections.getSubTypesOf(Resource::class.java)
+        classes.forEach { environment.jersey().register(Novocaine.get(it)) }
+    }
 
-        //environment.jersey().register(Novocaine.get(AvatarResource::class.java))
-        environment.jersey().register(Novocaine.get(UserResource::class.java))
+    private fun createDatastore() {
+        val db: DB = MongoClient().getDB("openheart")
+        val jongo = Jongo(db,
+            JacksonMapper.Builder()
+                .registerModule(KotlinModule())
+                .build())
+
+        //TODO this is a workaround currently
+        //jongo.database.dropDatabase()
+        val users = jongo.getCollection("users")
+        users.ensureIndex("{email:1}", "{unique:true,sparse:false}");
+        Novocaine.get(Users::class.java).collection = users
+
     }
 }

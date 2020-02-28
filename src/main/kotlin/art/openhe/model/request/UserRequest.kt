@@ -14,10 +14,12 @@ data class UserRequest (
 ) {
 
     fun toUser() =
-        User(email = email, avatar = avatar)
+        User(email = email,
+            avatar = avatar)
 
     fun applyAsUpdate(user: User) =
         User(user.id,
             email ?: user.email,
             avatar ?: user.avatar)
+
 }

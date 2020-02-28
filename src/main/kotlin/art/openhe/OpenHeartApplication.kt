@@ -26,6 +26,6 @@ class OpenHeartApplication : Application<OpenHeartConfig>() {
         })*/
 
         //environment.jersey().register(Novocaine.get(AvatarResource::class.java))
-        environment.jersey().register(UserResource())
+        environment.jersey().register(Novocaine.get(UserResource::class.java))
     }
 }

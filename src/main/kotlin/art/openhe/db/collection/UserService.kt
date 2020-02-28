@@ -2,14 +2,16 @@ package art.openhe.db.collection
 
 import art.openhe.model.User
 import org.bson.types.ObjectId
+import org.jongo.Jongo
 import org.jongo.MongoCollection
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Users {
+class UserService
+@Inject constructor(jongo: Jongo){
 
-    //TODO this is a workaround currently
-    lateinit var collection: MongoCollection
+    private val collection: MongoCollection = jongo.getCollection("users")
 
     fun save(user: User): User? {
         collection.save(user)

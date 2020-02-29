@@ -10,6 +10,9 @@ data class User (
     @MongoId @MongoObjectId val id: String,
     val email: String,
     val password: String,
-    val avatar: String
+    val avatar: String,
+    val lastSentMessageTimestamp: Long = 0,
+    val lastReceivedMessageTimestamp: Long = 0,
+    val numHearts: Long = 0
 
 )

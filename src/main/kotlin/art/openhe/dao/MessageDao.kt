@@ -1,4 +1,4 @@
-package art.openhe.service
+package art.openhe.dao
 
 import art.openhe.model.Message
 import org.bson.types.ObjectId
@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MessageService
+class MessageDao
 @Inject constructor(jongo: Jongo) {
 
     private val collection: MongoCollection = jongo.getCollection("messages")

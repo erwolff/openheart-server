@@ -5,7 +5,7 @@ import art.openhe.model.MessageCategory
 import org.bson.types.ObjectId
 
 
-data class MessageRequest (
+data class MessageRequest(
 
     val authorId: String? = null,
     val authorAvatar: String? = null,
@@ -15,4 +15,15 @@ data class MessageRequest (
     val category: MessageCategory? = null,
     val body: String? = null
 
-)
+) {
+
+    fun applyAsSave() =
+        Message(id = ObjectId().toHexString(),
+            authorId = authorId!!,
+            authorAvatar = authorAvatar!!,
+            recipientId = recipientId,
+            recipientAvatar = recipientAvatar,
+            isReply = isReply ?: false,
+            category = category,
+            body = body!!)
+}

@@ -23,6 +23,7 @@ ext.jongo_version = '1.4.+'
 ext.mongodb_version = '3.12.+'
 ext.jackson_kotlin_version = '2.10.+'
 ext.jbcrypt_version = '0.4'
+ext.joda_version = '2.10.5'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
@@ -32,8 +33,7 @@ dependencies {
     compile group: 'org.mongodb', name: 'mongo-java-driver', version: "$mongodb_version"
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: "$jackson_kotlin_version"
     compile group: 'org.mindrot', name: 'jbcrypt', version: "$jbcrypt_version"
-
-
+    compile group: 'joda-time', name: 'joda-time', version: "$joda_version"
 }
 
 apply plugin: 'application'

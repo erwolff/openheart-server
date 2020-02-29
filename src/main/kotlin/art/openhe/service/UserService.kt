@@ -1,4 +1,4 @@
-package art.openhe.db.collection
+package art.openhe.service
 
 import art.openhe.model.User
 import org.bson.types.ObjectId
@@ -9,7 +9,7 @@ import javax.inject.Singleton
 
 @Singleton
 class UserService
-@Inject constructor(jongo: Jongo){
+@Inject constructor(jongo: Jongo) {
 
     private val collection: MongoCollection = jongo.getCollection("users")
 

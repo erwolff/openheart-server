@@ -7,7 +7,7 @@ import org.jongo.Jongo
 import org.jongo.marshall.jackson.JacksonMapper
 import javax.inject.Singleton
 
-class ServiceProvider {
+class ServiceConfig {
 
     @Singleton
     fun getJongo(): Jongo {
@@ -23,5 +23,7 @@ class ServiceProvider {
 
     private fun ensureIndices(jongo: Jongo) {
         jongo.getCollection("users").ensureIndex("{email:1}", "{unique:true,sparse:false}")
+        jongo.getCollection("messages").ensureIndex("{authorId:1}")
+        jongo.getCollection("messages").ensureIndex("{recipientId:1}")
     }
 }

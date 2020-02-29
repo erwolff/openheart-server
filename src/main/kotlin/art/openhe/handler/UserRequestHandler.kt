@@ -1,6 +1,6 @@
 package art.openhe.handler
 
-import art.openhe.db.collection.UserService
+import art.openhe.service.UserService
 import art.openhe.model.request.UserRequest
 import art.openhe.model.response.*
 import javax.inject.Inject
@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response
 
 @Singleton
 class UserRequestHandler
-@Inject constructor(private val userService: UserService){
+@Inject constructor(private val userService: UserService) {
 
 
     fun getUser(id: String): ApiResponse<UserResponse, UserErrorResponse> =

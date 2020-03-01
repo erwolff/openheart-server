@@ -18,24 +18,4 @@ data class Message(
     val sentTimestamp: Long = 0,
     val readTimestamp: Long = 0
 
-) {
-
-    fun update(
-        recipientId: String? = null,
-        recipientAvatar: String? = null,
-        sentTimestamp: Long? = null,
-        readTimestamp: Long? = null
-    ): Message =
-        Message(
-            id,
-            authorId,
-            authorAvatar,
-            recipientId ?: this.recipientId,
-            recipientAvatar ?: this.recipientAvatar,
-            isReply,
-            category,
-            body,
-            sentTimestamp ?: this.sentTimestamp,
-            readTimestamp ?: this.readTimestamp
-        )
-}
+)

@@ -23,11 +23,8 @@ class UserRequestHandler
 
 
     fun updateUser(id: String, request: UserRequest): ApiResponse<UserResponse, UserErrorResponse> {
-        val user = userDao.findById(id)
-            ?: return UserErrorResponse(Response.Status.NOT_FOUND, id = "A user with id $id does not exist").toApiResponse()
-
-        return userDao.save(request.applyAsUpdate(user))?.toUserResponse()?.toApiResponse()
-            ?: UserErrorResponse(Response.Status.CONFLICT).toApiResponse()
+        return userDao.update(id, request.toUpdateQuery())?.toUserResponse()?.toApiResponse()
+            ?: UserErrorResponse(Response.Status.NOT_FOUND).toApiResponse()
     }
 
 

@@ -18,6 +18,9 @@ data class MessageResponse (
 ) : EntityResponse()
 
 fun Message.toMessageResponse() =
+    toMessageResponse(recipientId, recipientAvatar)
+
+fun Message.toMessageResponse(recipientId: String?, recipientAvatar: String?) =
     MessageResponse(id,
         authorId,
         authorAvatar,

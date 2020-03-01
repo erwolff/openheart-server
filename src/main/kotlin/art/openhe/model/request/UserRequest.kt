@@ -2,6 +2,8 @@ package art.openhe.model.request
 
 import art.openhe.model.User
 import art.openhe.util.AuthUtil
+import art.openhe.util.MongoUtil
+import art.openhe.util.UpdateQuery
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import org.bson.types.ObjectId
@@ -23,10 +25,10 @@ data class UserRequest (
             //TODO: Generate a random avatar (from the list of animals) if null
             avatar = avatar!!)
 
-    fun applyAsUpdate(user: User) =
-        User(user.id,
-            email ?: user.email,
-            password?.let{ AuthUtil.saltAndHash(it) } ?: user.password,
-            avatar ?: user.avatar)
+    fun toUpdateQuery() =
+        UpdateQuery(
+            email?.let { "email" to it },
+            password?.let { "password" to it },
+            avatar?.let { "avatar" to it } )
 
 }

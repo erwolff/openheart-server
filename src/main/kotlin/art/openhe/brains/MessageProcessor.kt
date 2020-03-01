@@ -2,6 +2,8 @@ package art.openhe.brains
 
 import art.openhe.dao.MessageDao
 import art.openhe.model.Message
+import art.openhe.util.MongoUtil
+import art.openhe.util.UpdateQuery
 import art.openhe.util.logger
 import org.joda.time.DateTimeUtils
 import javax.inject.Inject
@@ -23,33 +25,35 @@ class MessageProcessor
     private val log = logger()
 
     fun process(message: Message) {
-        val messageToSend =
-            if (message.isReply) message
+        val recipient =
+            if(message.isReply) message.recipientId to message.recipientAvatar
             else findRecipient(message)
 
-        if (messageToSend.recipientId == null) {
+        val recipientId = recipient?.first
+        val recipientAvatar = recipient?.second
+
+        if (recipient == null || recipientId == null || recipientAvatar == null) {
             log.error("Unable to find recipient for message from author ${message.authorId}")
-            storeMessage(message)
             return
         }
 
         // send message to recipient
-        val sentTimestamp = sendMessage(messageToSend)
+        val sentTimestamp = sendMessage(message, recipientId, recipientAvatar)
 
-        // store the sent message
-        storeMessage(messageToSend.update(sentTimestamp = sentTimestamp))
+        // update the message with the sentTimestamp and recipient
+        updateMessage(message, sentTimestamp, recipientId, recipientAvatar)
     }
 
-    private fun findRecipient(message: Message): Message {
+    private fun findRecipient(message: Message): Pair<String, String>? {
         log.info("Finding recipient for message from author: ${message.authorId}")
 
-        return recipientFinder.find(message)?.let {
-            message.update(recipientId = it.id, recipientAvatar = it.avatar)
-        } ?: message
+        return  recipientFinder.find(message)?.let {
+            it.id to it.avatar
+        }
     }
 
-    private fun sendMessage(message: Message): Long {
-        log.info("Sending message from author ${message.authorId} to recipient ${message.recipientId}")
+    private fun sendMessage(message: Message, recipientId: String, recipientAvatar: String): Long {
+        log.info("Sending message from author ${message.authorId} to recipient $recipientId")
 
         // send message to recipientId
         //TODO
@@ -58,8 +62,12 @@ class MessageProcessor
         return DateTimeUtils.currentTimeMillis()
     }
 
-    private fun storeMessage(message: Message) {
-        log.info("Storing message from author ${message.authorId}")
-        messageDao.save(message)
+    private fun updateMessage(message: Message, sentTimestamp: Long, recipientId: String, recipientAvatar: String) {
+        log.info("Updating message from author ${message.authorId}")
+
+        messageDao.update(message.id, UpdateQuery(
+            "sentTimestamp" to sentTimestamp,
+            "recipientId" to recipientId,
+            "recipientAvatar" to recipientAvatar))
     }
 }

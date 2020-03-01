@@ -1,4 +1,4 @@
 package art.openhe.model.response
 
 
-class EmptyResponse : SuccessResponse()
+class EmptyResponse : HandlerResponse()

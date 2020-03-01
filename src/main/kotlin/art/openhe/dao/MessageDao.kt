@@ -10,13 +10,12 @@ import org.jongo.Jongo
 import org.jongo.MongoCollection
 import org.jongo.Oid
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class MessageDao
-@Inject constructor(jongo: Jongo) {
-
-    private val collection: MongoCollection = jongo.getCollection("messages")
+@Inject constructor(@Named("messages") private val collection: MongoCollection) {
 
 
     fun save(message: Message): Message? =

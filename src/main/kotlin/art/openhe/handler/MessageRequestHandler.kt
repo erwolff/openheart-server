@@ -14,16 +14,16 @@ class MessageRequestHandler
                     private val messageProcessor: MessageProcessor) {
 
 
-    fun receiveMessage(request: MessageRequest): ApiResponse<EmptyResponse, MessageErrorResponse> {
+    fun receiveMessage(request: MessageRequest): HandlerResponse {
         // TODO: validation
         // TODO: put message on queue - next line is processing post-queue
         messageDao.save(request.applyAsSave())?.let { messageProcessor.process(it) }
-        return EmptyResponse().toApiResponse()
+        return EmptyResponse()
     }
 
 
-    fun getMessage(id: String): ApiResponse<MessageResponse, MessageErrorResponse> =
-         messageDao.findById(id)?.toMessageResponse()?.toApiResponse()
-             ?: MessageErrorResponse(Response.Status.NOT_FOUND, id = "A message with id $id does not exist").toApiResponse()
+    fun getMessage(id: String): HandlerResponse =
+         messageDao.findById(id)?.toMessageResponse()
+             ?: MessageErrorResponse(Response.Status.NOT_FOUND, id = "A message with id $id does not exist")
 
 }

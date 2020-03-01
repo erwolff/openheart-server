@@ -13,25 +13,25 @@ class UserRequestHandler
 @Inject constructor(private val userDao: UserDao) {
 
 
-    fun createUser(request: UserRequest): ApiResponse<UserResponse, UserErrorResponse> =
-        userDao.save(request.applyAsSave())?.toUserResponse()?.toApiResponse()
-            ?: UserErrorResponse(Response.Status.CONFLICT, email = "A user with email ${request.email} already exists").toApiResponse()
+    fun createUser(request: UserRequest): HandlerResponse =
+        userDao.save(request.applyAsSave())?.toUserResponse()
+            ?: UserErrorResponse(Response.Status.CONFLICT, email = "A user with email ${request.email} already exists")
 
 
-    fun updateUser(id: String, request: UserRequest): ApiResponse<UserResponse, UserErrorResponse> =
+    fun updateUser(id: String, request: UserRequest): HandlerResponse =
         if (request.email != null && userDao.findByEmail(request.email) != null)
-            UserErrorResponse(Response.Status.CONFLICT, email = "A user with email ${request.email} already exists").toApiResponse()
+            UserErrorResponse(Response.Status.CONFLICT, email = "A user with email ${request.email} already exists")
 
-        else userDao.update(id, request.toUpdateQuery())?.toUserResponse()?.toApiResponse()
-            ?: UserErrorResponse(Response.Status.NOT_FOUND, id = "A user with id $id does not exist").toApiResponse()
-
-
-    fun deleteUser(id: String): ApiResponse<EmptyResponse, UserErrorResponse> =
-        userDao.delete(id)?.let { EmptyResponse() }?.toApiResponse()
-            ?: UserErrorResponse(Response.Status.NOT_FOUND, id = "A user with id $id does not exist").toApiResponse()
+        else userDao.update(id, request.toUpdateQuery())?.toUserResponse()
+            ?: UserErrorResponse(Response.Status.NOT_FOUND, id = "A user with id $id does not exist")
 
 
-    fun getUser(id: String): ApiResponse<UserResponse, UserErrorResponse> =
-        userDao.findById(id)?.toUserResponse()?.toApiResponse()
-            ?: UserErrorResponse(Response.Status.NOT_FOUND, id = "A user with id $id does not exist").toApiResponse()
+    fun deleteUser(id: String): HandlerResponse =
+        userDao.delete(id)?.let { EmptyResponse() }
+            ?: UserErrorResponse(Response.Status.NOT_FOUND, id = "A user with id $id does not exist")
+
+
+    fun getUser(id: String): HandlerResponse =
+        userDao.findById(id)?.toUserResponse()
+            ?: UserErrorResponse(Response.Status.NOT_FOUND, id = "A user with id $id does not exist")
 }

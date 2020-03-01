@@ -2,7 +2,6 @@ package art.openhe.brains
 
 import art.openhe.dao.MessageDao
 import art.openhe.model.Message
-import art.openhe.model.response.toMessageResponse
 import art.openhe.util.UpdateQuery
 import art.openhe.util.logger
 import org.joda.time.DateTimeUtils
@@ -17,10 +16,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class MessageProcessor
-@Inject constructor(
-    private val messageDao: MessageDao,
-    private val recipientFinder: RecipientFinder
-) {
+@Inject constructor(private val messageDao: MessageDao,
+                    private val recipientFinder: RecipientFinder) {
 
     private val log = logger()
 

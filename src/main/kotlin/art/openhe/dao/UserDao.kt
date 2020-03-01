@@ -9,13 +9,12 @@ import org.jongo.Jongo
 import org.jongo.MongoCollection
 import org.jongo.Oid
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class UserDao
-@Inject constructor(jongo: Jongo) {
-
-    internal val collection: MongoCollection = jongo.getCollection("users")
+@Inject constructor(@Named("users") internal val collection: MongoCollection) {
 
 
     fun save(user: User): User? =

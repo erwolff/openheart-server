@@ -5,7 +5,6 @@ import art.openhe.util.AuthUtil
 import art.openhe.util.UpdateQuery
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
-import org.bson.types.ObjectId
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -18,7 +17,7 @@ data class UserRequest (
 ) {
 
     fun applyAsSave() =
-        User(id = ObjectId().toHexString(),
+        User(
             email = email!!,
             password = AuthUtil.saltAndHash(password!!),
             //TODO: Generate a random avatar (from the list of animals) if null

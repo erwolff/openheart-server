@@ -2,7 +2,6 @@ package art.openhe.model.request
 
 import art.openhe.model.Message
 import art.openhe.model.MessageCategory
-import org.bson.types.ObjectId
 
 
 data class MessageRequest(
@@ -18,7 +17,7 @@ data class MessageRequest(
 ) {
 
     fun applyAsSave() =
-        Message(id = ObjectId().toHexString(),
+        Message(
             authorId = authorId!!,
             authorAvatar = authorAvatar!!,
             recipientId = recipientId,

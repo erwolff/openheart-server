@@ -2,6 +2,7 @@ package art.openhe.brains
 
 import art.openhe.dao.MessageDao
 import art.openhe.model.Message
+import art.openhe.model.response.toMessageResponse
 import art.openhe.util.UpdateQuery
 import art.openhe.util.logger
 import org.joda.time.DateTimeUtils
@@ -56,6 +57,7 @@ class MessageProcessor
 
         // send message to recipientId
         //TODO
+        // send to app (with recipientId): message.toMessageResponse(recipientId, recipientAvatar)
 
         //return sentTimestamp
         return DateTimeUtils.currentTimeMillis()

@@ -23,8 +23,11 @@ class ServiceConfig {
 
     private fun ensureIndices(jongo: Jongo) {
         jongo.getCollection("users").ensureIndex("{email:1}", "{unique:true,sparse:false}")
+        jongo.getCollection("users").ensureIndex("{createdTimestamp:1}")
         jongo.getCollection("users").ensureIndex("{lastReceivedMessageTimestamp:1}")
+
         jongo.getCollection("messages").ensureIndex("{authorId:1}")
         jongo.getCollection("messages").ensureIndex("{recipientId:1}")
+        jongo.getCollection("messages").ensureIndex("{createdTimestamp:1}")
     }
 }

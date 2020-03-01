@@ -3,24 +3,24 @@ package art.openhe.model.response
 import javax.ws.rs.core.Response
 
 
-class ApiResponse<ENTITY : EntityResponse, ERROR : ErrorResponse> {
-    val entity: ENTITY?
+class ApiResponse<SUCCESS : SuccessResponse, ERROR : ErrorResponse> {
+    val success: SUCCESS?
     val error: ERROR?
 
-    constructor(entity: ENTITY) {
-        this.entity = entity
+    constructor(success: SUCCESS) {
+        this.success = success
         error = null
     }
 
     constructor(error: ERROR) {
         this.error = error
-        entity = null
+        success = null
     }
 
     val isSuccess: Boolean
-        get() = entity != null
+        get() = success != null
 
     fun toResponse(): Response {
-        return entity?.toResponse() ?: error!!.toResponse()
+        return success?.toResponse() ?: error!!.toResponse()
     }
 }

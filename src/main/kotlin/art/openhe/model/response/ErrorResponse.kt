@@ -11,7 +11,7 @@ abstract class ErrorResponse {
     abstract val status: Response.Status
 
     @Suppress("UNCHECKED_CAST")
-    fun <ENTITY: EntityResponse, ERROR: ErrorResponse> toApiResponse(): ApiResponse<ENTITY, ERROR> =
+    fun <SUCCESS: SuccessResponse, ERROR: ErrorResponse> toApiResponse(): ApiResponse<SUCCESS, ERROR> =
         ApiResponse(this as ERROR)
 
     fun toResponse(): Response = Response.status(status).entity(ErrorResponseWrapper(this)).build()

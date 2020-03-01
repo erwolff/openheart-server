@@ -2,7 +2,6 @@ package art.openhe.brains
 
 import art.openhe.dao.MessageDao
 import art.openhe.model.Message
-import art.openhe.util.MongoUtil
 import art.openhe.util.UpdateQuery
 import art.openhe.util.logger
 import org.joda.time.DateTimeUtils

@@ -13,15 +13,17 @@ class MessageRequestHandler
 @Inject constructor(private val messageDao: MessageDao,
                     private val messageProcessor: MessageProcessor) {
 
+
+    fun receiveMessage(request: MessageRequest): ApiResponse<EmptyResponse, MessageErrorResponse> {
+        // TODO: validation
+        // TODO: put message on queue - next line is processing post-queue
+        messageDao.save(request.applyAsSave())?.let { messageProcessor.process(it) }
+        return EmptyResponse().toApiResponse()
+    }
+
+
     fun getMessage(id: String): ApiResponse<MessageResponse, MessageErrorResponse> =
          messageDao.findById(id)?.toMessageResponse()?.toApiResponse()
              ?: MessageErrorResponse(Response.Status.NOT_FOUND, id = "A message with id $id does not exist").toApiResponse()
 
-    fun receiveMessage(request: MessageRequest): ApiResponse<MessageResponse, MessageErrorResponse> {
-        val message = messageDao.save(request.applyAsSave())
-        message?.let { messageProcessor.process(it) }
-        return message?.toMessageResponse()?.toApiResponse()
-            ?: MessageErrorResponse(Response.Status.INTERNAL_SERVER_ERROR).toApiResponse()
-    }
-        
 }

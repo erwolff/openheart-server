@@ -2,7 +2,6 @@ package art.openhe.model.request
 
 import art.openhe.model.User
 import art.openhe.util.AuthUtil
-import art.openhe.util.MongoUtil
 import art.openhe.util.UpdateQuery
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
@@ -28,7 +27,7 @@ data class UserRequest (
     fun toUpdateQuery() =
         UpdateQuery(
             email?.let { "email" to it },
-            password?.let { "password" to it },
+            password?.let { "password" to AuthUtil.saltAndHash(it) },
             avatar?.let { "avatar" to it } )
 
 }

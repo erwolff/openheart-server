@@ -1,6 +1,7 @@
 package art.openhe.brains
 
 import art.openhe.dao.UserDao
+import art.openhe.dao.ext.findOneByLastReceivedMessageTimestampLessThan
 import art.openhe.model.Message
 import art.openhe.model.User
 import art.openhe.util.logger

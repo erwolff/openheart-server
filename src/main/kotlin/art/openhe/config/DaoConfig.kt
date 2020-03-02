@@ -12,15 +12,11 @@ import javax.inject.Singleton
 class DaoConfig {
 
     @Singleton
-    fun getJongo(): Jongo {
-        val db: DB = MongoClient().getDB("openheart")
-        val jongo = Jongo(db, JacksonMapper.Builder()
-                .registerModule(KotlinModule())
-                .build())
+    fun getJongo(): Jongo =
+        Jongo(MongoClient().getDB("openheart"), JacksonMapper.Builder()
+            .registerModule(KotlinModule())
+            .build())
 
-        //jongo.database.dropDatabase()
-        return jongo
-    }
 
     @Singleton
     @Named("users")
@@ -30,6 +26,7 @@ class DaoConfig {
         jongo.getCollection("users").ensureIndex("{lastReceivedMessageTimestamp:1}")
         return jongo.getCollection("users")
     }
+
 
     @Singleton
     @Named("messages")

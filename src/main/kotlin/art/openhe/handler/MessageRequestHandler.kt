@@ -1,9 +1,10 @@
 package art.openhe.handler
 
-import art.openhe.brains.MessageProcessor
 import art.openhe.model.request.MessageRequest
 import art.openhe.model.response.*
 import art.openhe.dao.MessageDao
+import art.openhe.queue.Queues
+import art.openhe.queue.producer.SqsMessageProducer
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.ws.rs.core.Response
@@ -11,13 +12,12 @@ import javax.ws.rs.core.Response
 @Singleton
 class MessageRequestHandler
 @Inject constructor(private val messageDao: MessageDao,
-                    private val messageProcessor: MessageProcessor) {
+                    private val producer: SqsMessageProducer) {
 
 
     fun receiveMessage(request: MessageRequest): HandlerResponse {
-        // TODO: validation
-        // TODO: put message on queue - next line is processing post-queue
-        messageDao.save(request.applyAsSave())?.let { messageProcessor.process(it) }
+        //TODO: Validation
+        messageDao.save(request.applyAsSave())?.let { producer.publish(it, Queues.messageProcessor) }
         return EmptyResponse()
     }
 

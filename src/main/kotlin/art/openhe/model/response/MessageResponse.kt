@@ -11,7 +11,7 @@ data class MessageResponse (
     val authorAvatar: String? = null,
     val recipientId: String? = null,
     val recipientAvatar: String? = null,
-    val isReply: Boolean? = false,
+    val replyId: String? = null,
     val category: MessageCategory? = null,
     val body: String? = null
 
@@ -26,6 +26,6 @@ fun Message.toMessageResponse(recipientId: String?, recipientAvatar: String?) =
         authorAvatar,
         recipientId,
         recipientAvatar,
-        isReply,
+        replyId,
         category,
         body)

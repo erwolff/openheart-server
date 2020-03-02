@@ -10,7 +10,7 @@ data class MessageRequest(
     val authorAvatar: String? = null,
     val recipientId: String? = null,
     val recipientAvatar: String? = null,
-    val isReply: Boolean? = false,
+    val replyId: String? = null,
     val category: MessageCategory? = null,
     val body: String? = null
 
@@ -22,7 +22,7 @@ data class MessageRequest(
             authorAvatar = authorAvatar!!,
             recipientId = recipientId,
             recipientAvatar = recipientAvatar,
-            isReply = isReply ?: false,
+            replyId = replyId,
             category = category,
             body = body!!)
 }

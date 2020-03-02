@@ -11,7 +11,7 @@ data class MessageErrorResponse (
     val authorAvatar: String? = null,
     val recipientId: String? = null,
     val recipientAvatar: String? = null,
-    val isReply: String? = null,
+    val reply: String? = null,
     val category: String? = null,
     val body: String? = null
 

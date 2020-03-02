@@ -14,11 +14,13 @@ class UserRequestHandler
 
 
     fun createUser(request: UserRequest): HandlerResponse =
+        //TODO: Validation
         userDao.save(request.applyAsSave())?.toUserResponse()
             ?: UserErrorResponse(Response.Status.CONFLICT, email = "A user with email ${request.email} already exists")
 
 
     fun updateUser(id: String, request: UserRequest): HandlerResponse =
+        //TODO: Validation
         if (request.email != null && userDao.findByEmail(request.email) != null)
             UserErrorResponse(Response.Status.CONFLICT, email = "A user with email ${request.email} already exists")
 

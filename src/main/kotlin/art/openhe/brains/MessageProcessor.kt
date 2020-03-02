@@ -23,7 +23,7 @@ class MessageProcessor
 
     fun process(message: Message) {
         val recipient =
-            if(message.isReply) message.recipientId to message.recipientAvatar
+            if(message.replyId != null) message.recipientId to message.recipientAvatar
             else findRecipient(message)
 
         val recipientId = recipient?.first
@@ -42,7 +42,7 @@ class MessageProcessor
     }
 
     private fun findRecipient(message: Message): Pair<String, String>? {
-        log.info("Finding recipient for message from author: ${message.authorId}")
+        log.info("Finding recipient for message from author ${message.authorId}")
 
         return  recipientFinder.find(message)?.let {
             it.id to it.avatar

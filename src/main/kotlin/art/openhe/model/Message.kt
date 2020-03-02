@@ -13,7 +13,7 @@ data class Message(
     val authorAvatar: String,
     val recipientId: String? = null,
     val recipientAvatar: String? = null,
-    val isReply: Boolean,
+    val replyId: String? = null,
     val category: MessageCategory? = null,
     val body: String,
     val sentTimestamp: Long = 0,

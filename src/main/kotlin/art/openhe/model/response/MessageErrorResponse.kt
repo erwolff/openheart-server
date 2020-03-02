@@ -6,6 +6,7 @@ import javax.ws.rs.core.Response
 data class MessageErrorResponse (
 
     override val status: Response.Status,
+    override val message: String? = null,
     val id: String? = null,
     val authorId: String? = null,
     val authorAvatar: String? = null,

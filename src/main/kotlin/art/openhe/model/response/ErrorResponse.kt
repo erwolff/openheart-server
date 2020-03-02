@@ -9,6 +9,8 @@ abstract class ErrorResponse : HandlerResponse() {
     @get:JsonIgnore
     abstract val status: Response.Status
 
+    open val message: String? = null
+
     override fun toResponse(): Response = Response.status(status).entity(ErrorResponseWrapper(this)).build()
 
     class ErrorResponseWrapper(val errors: ErrorResponse)

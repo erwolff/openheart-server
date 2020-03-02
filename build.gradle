@@ -41,7 +41,7 @@ dependencies {
 }
 
 apply plugin: 'application'
-mainClassName = 'art.openhe.OpenHeartAppKt'
+mainClassName = 'art.openhe.AppKt'
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"

@@ -17,7 +17,6 @@ repositories {
     }
 }
 
-ext.kotlin_coroutines_version = '1.3.3'
 ext.dropwizard_version = '2.0.+'
 ext.novocaine_version = '0.0.4'
 ext.jongo_version = '1.4.+'
@@ -29,7 +28,6 @@ ext.aws_sqs_version = '1.0.8'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: "$kotlin_coroutines_version"
     compile group: 'io.dropwizard', name: 'dropwizard-core', version: "$dropwizard_version"
     compile group: 'io.novocaine', name: 'novocaine', version: "$novocaine_version"
     compile group: 'org.jongo', name: 'jongo', version: "$jongo_version"
@@ -48,8 +46,4 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
-}
-
-run {
-    args = ['server', 'config/local.yaml']
 }

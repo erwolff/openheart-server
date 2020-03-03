@@ -4,12 +4,19 @@ import art.openhe.dao.UserDao
 import art.openhe.model.User
 import art.openhe.util.MongoQueryDefs
 import art.openhe.util.ext.letAsObjectId
+import art.openhe.util.ext.letIfNotEmpty
 import art.openhe.util.ext.runQuery
 
 
-fun UserDao.findByEmail(email: String): User? =
-    collection.runQuery { it.findOne(MongoQueryDefs.Users.byEmail, email).`as`(User::class.java) }
+fun UserDao.findByGoogleId(googleId: String): User? =
+    googleId.letIfNotEmpty {
+        collection.runQuery { it.findOne(MongoQueryDefs.Users.byGoogleId, googleId).`as`(User::class.java) }
+    }
 
+fun UserDao.findByEmail(email: String): User? =
+    email.letIfNotEmpty {
+        collection.runQuery { it.findOne(MongoQueryDefs.Users.byEmail, email).`as`(User::class.java) }
+    }
 
 
 fun UserDao.findOneByLastReceivedMessageTimestampLessThan(excludeId: String, timestamp: Long): User? =

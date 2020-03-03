@@ -10,7 +10,7 @@ data class User (
 
     @MongoId @MongoObjectId override val id: String = ObjectId().toHexString(),
     val email: String,
-    val password: String,
+    val googleId: String,
     val avatar: String,
     val lastSentMessageTimestamp: Long = 0,
     val lastReceivedMessageTimestamp: Long = 0,

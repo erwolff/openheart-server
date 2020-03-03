@@ -19,6 +19,9 @@ constructor(private val props: Map<String, String> = System.getenv()) {
     fun awsSecretKey(): String =
         getValue("AWS_SECRET_KEY") ?: ""
 
+    fun firebaseDbUrl(): String =
+        getValue("FIREBASE_DB_URL") ?: ""
+
     private fun getValue(key: String): String? = props[key]
 
 }

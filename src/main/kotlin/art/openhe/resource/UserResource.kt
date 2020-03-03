@@ -14,10 +14,6 @@ import javax.ws.rs.core.Response
 class UserResource
 @Inject constructor(private val handler: UserRequestHandler): Resource {
 
-    @POST
-    fun createUser(request: UserRequest): Response =
-        handler.createUser(request).toResponse()
-
     @GET
     @Path("/{id}")
     fun getUser(@PathParam("id") id: String): Response =

@@ -1,11 +1,15 @@
 package art.openhe
 
+import art.openhe.config.EnvConfig
 import art.openhe.config.OpenHeartConfig
 import art.openhe.queue.QueueManager
 import art.openhe.queue.consumer.SqsMessageConsumer
 import art.openhe.resource.HealthCheckResource
 import art.openhe.resource.Resource
 import art.openhe.util.logger
+import com.google.auth.oauth2.GoogleCredentials
+import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
 import io.dropwizard.Application
 import io.dropwizard.setup.Environment
 import io.novocaine.Novocaine
@@ -25,8 +29,10 @@ class App : Application<OpenHeartConfig>() {
     override fun run(configuration: OpenHeartConfig, environment: Environment) {
         log.info("Running ${configuration.name}")
         Novocaine.inject(this)
+        // TODO: Add support for something similar to Spring's @PostConstruct into Novocaine then move the below:
         registerResources(configuration, environment)
         registerConsumers()
+        initFirebase()
     }
 
     /**
@@ -55,5 +61,14 @@ class App : Application<OpenHeartConfig>() {
 
         // start the consumers
         queueManager?.start()
+    }
+
+    private fun initFirebase() {
+        val options = FirebaseOptions.Builder()
+            .setCredentials(GoogleCredentials.getApplicationDefault())
+            .setDatabaseUrl(Novocaine.get(EnvConfig::class.java).firebaseDbUrl())
+            .build()
+
+        FirebaseApp.initializeApp(options)
     }
 }

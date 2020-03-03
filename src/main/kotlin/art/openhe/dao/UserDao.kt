@@ -3,6 +3,7 @@ package art.openhe.dao
 import art.openhe.model.User
 import art.openhe.util.UpdateQuery
 import art.openhe.util.ext.letAsObjectId
+import art.openhe.util.ext.letIfNotEmpty
 import art.openhe.util.ext.positiveCountOrNull
 import art.openhe.util.ext.runQuery
 import org.jongo.Jongo

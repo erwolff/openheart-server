@@ -12,19 +12,9 @@ import javax.ws.rs.core.Response
 class UserRequestHandler
 @Inject constructor(private val userDao: UserDao) {
 
-
-    fun createUser(request: UserRequest): HandlerResponse =
-        //TODO: Validation
-        userDao.save(request.applyAsSave())?.toUserResponse()
-            ?: UserErrorResponse(Response.Status.CONFLICT, email = "A user with email ${request.email} already exists")
-
-
     fun updateUser(id: String, request: UserRequest): HandlerResponse =
         //TODO: Validation
-        if (request.email != null && userDao.findByEmail(request.email) != null)
-            UserErrorResponse(Response.Status.CONFLICT, email = "A user with email ${request.email} already exists")
-
-        else userDao.update(id, request.toUpdateQuery())?.toUserResponse()
+        userDao.update(id, request.toUpdateQuery())?.toUserResponse()
             ?: UserErrorResponse(Response.Status.NOT_FOUND, id = "A user with id $id does not exist")
 
 

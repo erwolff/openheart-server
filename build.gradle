@@ -22,7 +22,6 @@ ext.novocaine_version = '0.0.4'
 ext.jongo_version = '1.4.+'
 ext.mongodb_version = '3.12.+'
 ext.jackson_kotlin_version = '2.10.+'
-ext.jbcrypt_version = '0.4'
 ext.joda_version = '2.10.5'
 ext.aws_sqs_version = '1.0.8'
 ext.firebase_admin_version = '6.12.2'
@@ -35,7 +34,6 @@ dependencies {
     compile group: 'org.jongo', name: 'jongo', version: "$jongo_version"
     compile group: 'org.mongodb', name: 'mongo-java-driver', version: "$mongodb_version"
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: "$jackson_kotlin_version"
-    compile group: 'org.mindrot', name: 'jbcrypt', version: "$jbcrypt_version"
     compile group: 'joda-time', name: 'joda-time', version: "$joda_version"
     compile group: 'com.amazonaws', name: 'amazon-sqs-java-messaging-lib', version: "$aws_sqs_version"
 }

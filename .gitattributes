@@ -1,0 +1,9 @@
+# Used by git-crypt - the following files will be encrypted
+# To decrypt, use: git-crypt unlock /path/to/key
+
+# encrypt every file in the 'secure' dir:
+secure/** filter=git-crypt diff=git-crypt
+
+
+# exclude this file from encryption:
+.gitattributes !filter !diff

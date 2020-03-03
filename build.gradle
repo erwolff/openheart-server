@@ -25,9 +25,11 @@ ext.jackson_kotlin_version = '2.10.+'
 ext.jbcrypt_version = '0.4'
 ext.joda_version = '2.10.5'
 ext.aws_sqs_version = '1.0.8'
+ext.firebase_admin_version = '6.12.2'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation group: 'com.google.firebase', name: 'firebase-admin', version: "$firebase_admin_version"
     compile group: 'io.dropwizard', name: 'dropwizard-core', version: "$dropwizard_version"
     compile group: 'io.novocaine', name: 'novocaine', version: "$novocaine_version"
     compile group: 'org.jongo', name: 'jongo', version: "$jongo_version"

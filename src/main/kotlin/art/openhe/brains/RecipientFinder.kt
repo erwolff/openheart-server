@@ -1,8 +1,8 @@
 package art.openhe.brains
 
 import art.openhe.dao.UserDao
-import art.openhe.dao.ext.findOneByLastReceivedMessageTimestampLessThan
-import art.openhe.model.Message
+import art.openhe.dao.ext.findOneByLastReceivedLetterTimestampLessThan
+import art.openhe.model.Letter
 import art.openhe.model.User
 import art.openhe.util.logger
 import org.joda.time.DateTimeUtils
@@ -17,7 +17,7 @@ class RecipientFinder
     private val log = logger()
 
     //TODO: We'll want to do some more stuff here, but this is the basic implementation
-    fun find(message: Message): User? =
-        userDao.findOneByLastReceivedMessageTimestampLessThan(message.authorId,
+    fun find(letter: Letter): User? =
+        userDao.findOneByLastReceivedLetterTimestampLessThan(letter.authorId,
             DateTimeUtils.currentTimeMillis().minus(TimeUnit.DAYS.toMillis(1)))
 }

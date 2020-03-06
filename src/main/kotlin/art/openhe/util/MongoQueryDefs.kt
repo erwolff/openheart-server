@@ -15,9 +15,9 @@ object MongoQueryDefs {
     object Users {
         val byEmail = "{ email: # }"
         val byGoogleId = "{ googleId: # }"
-        val byIdNeAndLastReceivedMessageTimestampLt = and(
+        val byIdNeAndLastReceivedLetterTimestampLt = and(
             "{ _id: { \$ne: # } }",
-            "{ lastReceivedMessageTimestamp: { \$lt: # } }"
+            "{ lastReceivedLetterTimestamp: { \$lt: # } }"
         )
     }
 

@@ -21,19 +21,20 @@ class DaoConfig {
     @Singleton
     @Named("users")
     fun getUsersCollection(jongo: Jongo): MongoCollection {
+        jongo.getCollection("users").ensureIndex("{googleId:1}", "{unique:true,sparse:false}")
         jongo.getCollection("users").ensureIndex("{email:1}", "{unique:true,sparse:false}")
         jongo.getCollection("users").ensureIndex("{createdTimestamp:1}")
-        jongo.getCollection("users").ensureIndex("{lastReceivedMessageTimestamp:1}")
+        jongo.getCollection("users").ensureIndex("{lastReceivedLetterTimestamp:1}")
         return jongo.getCollection("users")
     }
 
 
     @Singleton
-    @Named("messages")
-    fun getMessagesCollection(jongo: Jongo): MongoCollection {
-        jongo.getCollection("messages").ensureIndex("{authorId:1}")
-        jongo.getCollection("messages").ensureIndex("{recipientId:1}")
-        jongo.getCollection("messages").ensureIndex("{createdTimestamp:1}")
-        return jongo.getCollection("messages")
+    @Named("letters")
+    fun getLettersCollection(jongo: Jongo): MongoCollection {
+        jongo.getCollection("letters").ensureIndex("{authorId:1}")
+        jongo.getCollection("letters").ensureIndex("{recipientId:1}")
+        jongo.getCollection("letters").ensureIndex("{createdTimestamp:1}")
+        return jongo.getCollection("letters")
     }
 }

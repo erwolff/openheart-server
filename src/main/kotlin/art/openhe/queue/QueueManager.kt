@@ -9,10 +9,11 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder
 import javax.inject.Inject
+import javax.inject.Singleton
 import javax.jms.MessageProducer
 import javax.jms.Session
 
-
+@Singleton
 class QueueManager
 @Inject constructor(private val envConfig: EnvConfig) {
 

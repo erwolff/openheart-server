@@ -6,7 +6,7 @@ import org.jongo.marshall.jackson.oid.MongoId
 import org.jongo.marshall.jackson.oid.MongoObjectId
 
 @JsonInclude(JsonInclude.Include.ALWAYS)
-data class Message(
+data class Letter(
 
     @MongoId @MongoObjectId override val id: String = ObjectId().toHexString(),
     val authorId: String,
@@ -14,7 +14,7 @@ data class Message(
     val recipientId: String? = null,
     val recipientAvatar: String? = null,
     val replyId: String? = null,
-    val category: MessageCategory? = null,
+    val category: LetterCategory? = null,
     val body: String,
     val sentTimestamp: Long = 0,
     val readTimestamp: Long = 0

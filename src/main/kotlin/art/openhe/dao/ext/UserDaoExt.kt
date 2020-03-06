@@ -19,7 +19,7 @@ fun UserDao.findByEmail(email: String): User? =
     }
 
 
-fun UserDao.findOneByLastReceivedMessageTimestampLessThan(excludeId: String, timestamp: Long): User? =
+fun UserDao.findOneByLastReceivedLetterTimestampLessThan(excludeId: String, timestamp: Long): User? =
     excludeId.letAsObjectId { oid ->
-        collection.runQuery { it.findOne(MongoQueryDefs.Users.byIdNeAndLastReceivedMessageTimestampLt, oid, timestamp).`as`(User::class.java) }
+        collection.runQuery { it.findOne(MongoQueryDefs.Users.byIdNeAndLastReceivedLetterTimestampLt, oid, timestamp).`as`(User::class.java) }
     }

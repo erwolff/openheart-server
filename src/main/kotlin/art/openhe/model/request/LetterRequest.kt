@@ -1,23 +1,23 @@
 package art.openhe.model.request
 
-import art.openhe.model.Message
-import art.openhe.model.MessageCategory
+import art.openhe.model.Letter
+import art.openhe.model.LetterCategory
 
 
-data class MessageRequest(
+data class LetterRequest(
 
     val authorId: String? = null,
     val authorAvatar: String? = null,
     val recipientId: String? = null,
     val recipientAvatar: String? = null,
     val replyId: String? = null,
-    val category: MessageCategory? = null,
+    val category: LetterCategory? = null,
     val body: String? = null
 
 ) {
 
     fun applyAsSave() =
-        Message(
+        Letter(
             authorId = authorId!!,
             authorAvatar = authorAvatar!!,
             recipientId = recipientId,

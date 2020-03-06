@@ -12,8 +12,8 @@ data class User (
     val email: String,
     val googleId: String,
     val avatar: String,
-    val lastSentMessageTimestamp: Long = 0,
-    val lastReceivedMessageTimestamp: Long = 0,
+    val lastSentLetterTimestamp: Long = 0,
+    val lastReceivedLetterTimestamp: Long = 0,
     val numHearts: Long = 0
 
 ) : DbObject()

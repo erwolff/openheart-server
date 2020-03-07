@@ -9,6 +9,10 @@ object MongoQueryDefs {
     val updatePrefix = "{ \$set: { "
     val updatePostfix = " } }"
 
+    object Sort {
+        val byCreatedTimestampDesc = "{ createdTimestamp: -1 }"
+    }
+
     /**
      * Users Queries
      */
@@ -19,6 +23,10 @@ object MongoQueryDefs {
             "{ _id: { \$ne: # } }",
             "{ lastReceivedLetterTimestamp: { \$lt: # } }"
         )
+    }
+
+    object Letters {
+        val byAuthorId = "{ authorId: # }"
     }
 
     private fun and(vararg strings: String) =

@@ -22,4 +22,10 @@ class LetterResource
     @Path("/{id}")
     fun getLetter(@PathParam("id") id: String): Response =
         handler.getLetter(id).toResponse()
+
+    @GET
+    fun getLetters(@QueryParam("authorId") authorId: String, // TODO: retrieve this from security context
+                   @QueryParam("page") page: Int,
+                   @QueryParam("size") size: Int): Response =
+        handler.getLetters(authorId, page, size).toResponse();
 }

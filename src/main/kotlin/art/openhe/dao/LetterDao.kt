@@ -13,7 +13,7 @@ import javax.inject.Singleton
 
 @Singleton
 class LetterDao
-@Inject constructor(@Named("letters") private val collection: MongoCollection) {
+@Inject constructor(@Named("letters") internal val collection: MongoCollection) {
 
 
     fun save(letter: Letter): Letter? =

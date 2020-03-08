@@ -11,6 +11,8 @@ object MongoQueryDefs {
 
     object Sort {
         val byCreatedTimestampDesc = "{ createdTimestamp: -1 }"
+        val bySentTimestampDesc = "{ sentTimestamp: -1 }"
+        val byWrittenTimestampDesc = "{ writtenTimestamp: -1 }"
     }
 
     /**
@@ -27,6 +29,7 @@ object MongoQueryDefs {
 
     object Letters {
         val byAuthorId = "{ authorId: # }"
+        val byRecipientId = "{ recipientId: # }"
     }
 
     private fun and(vararg strings: String) =

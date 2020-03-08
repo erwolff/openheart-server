@@ -4,6 +4,7 @@ import art.openhe.model.request.LetterRequest
 import art.openhe.model.response.*
 import art.openhe.dao.LetterDao
 import art.openhe.dao.ext.findPageByAuthorId
+import art.openhe.dao.ext.findPageByRecipientId
 import art.openhe.model.Letter
 import art.openhe.queue.Queues
 import art.openhe.queue.producer.SqsMessageProducer
@@ -28,9 +29,14 @@ class LetterRequestHandler
          letterDao.findById(id)?.toLetterResponse()
              ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
 
-    fun getLetters(authorId: String, page: Int, size: Int): HandlerResponse =
+    fun getSentLetters(authorId: String, page: Int, size: Int): HandlerResponse =
         if (page < 1) PageErrorResponse(Response.Status.BAD_REQUEST, page = "Page must be greater than 0")
         else letterDao.findPageByAuthorId(authorId, page, size)?.toPageResponse()
+            ?: PageResponse(listOf<Letter>(), page, size, 0, 0)
+
+    fun getReceivedLetters(recipientId: String, page: Int, size: Int): HandlerResponse =
+        if (page < 1) PageErrorResponse(Response.Status.BAD_REQUEST, page = "Page must be greater than 0")
+        else letterDao.findPageByRecipientId(recipientId, page, size)?.toPageResponse()
             ?: PageResponse(listOf<Letter>(), page, size, 0, 0)
 
 

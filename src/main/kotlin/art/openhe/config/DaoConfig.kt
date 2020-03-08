@@ -35,6 +35,8 @@ class DaoConfig {
         jongo.getCollection("letters").ensureIndex("{authorId:1}")
         jongo.getCollection("letters").ensureIndex("{recipientId:1}")
         jongo.getCollection("letters").ensureIndex("{createdTimestamp:1}")
+        jongo.getCollection("letters").ensureIndex("{sentTimestamp:1}")
+        jongo.getCollection("letters").ensureIndex("{writtenTimestamp:1}")
         return jongo.getCollection("letters")
     }
 }

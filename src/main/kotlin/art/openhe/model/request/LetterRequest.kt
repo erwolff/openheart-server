@@ -2,6 +2,7 @@ package art.openhe.model.request
 
 import art.openhe.model.Letter
 import art.openhe.model.LetterCategory
+import org.joda.time.DateTimeUtils
 
 
 data class LetterRequest(
@@ -12,7 +13,8 @@ data class LetterRequest(
     val recipientAvatar: String? = null,
     val replyId: String? = null,
     val category: LetterCategory? = null,
-    val body: String? = null
+    val body: String? = null,
+    val writtenTimestamp: Long? = null
 
 ) {
 
@@ -24,5 +26,6 @@ data class LetterRequest(
             recipientAvatar = recipientAvatar,
             replyId = replyId,
             category = category,
-            body = body!!)
+            body = body!!,
+            writtenTimestamp = writtenTimestamp ?: DateTimeUtils.currentTimeMillis())
 }

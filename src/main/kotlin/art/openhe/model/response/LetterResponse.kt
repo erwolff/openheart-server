@@ -13,7 +13,10 @@ data class LetterResponse (
     val recipientAvatar: String? = null,
     val replyId: String? = null,
     val category: LetterCategory? = null,
-    val body: String? = null
+    val body: String? = null,
+    val writtenTimestamp: Long? = 0,
+    val sentTimestamp: Long? = 0,
+    val readTimestamp: Long? = 0
 
 ) : EntityResponse()
 
@@ -28,4 +31,7 @@ fun Letter.toLetterResponse(recipientId: String?, recipientAvatar: String?) =
         recipientAvatar,
         replyId,
         category,
-        body)
+        body,
+        writtenTimestamp,
+        sentTimestamp,
+        readTimestamp)

@@ -16,6 +16,7 @@ data class Letter(
     val replyId: String? = null,
     val category: LetterCategory? = null,
     val body: String,
+    val writtenTimestamp: Long = 0,
     val sentTimestamp: Long = 0,
     val readTimestamp: Long = 0
 

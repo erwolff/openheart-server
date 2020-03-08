@@ -1,6 +1,7 @@
 package art.openhe.brains
 
 import art.openhe.dao.LetterDao
+import art.openhe.dao.UserDao
 import art.openhe.model.Letter
 import art.openhe.util.UpdateQuery
 import art.openhe.util.logger
@@ -17,6 +18,7 @@ import javax.inject.Singleton
 @Singleton
 class LetterProcessor
 @Inject constructor(private val letterDao: LetterDao,
+                    private val userDao: UserDao,
                     private val recipientFinder: RecipientFinder) {
 
     private val log = logger()
@@ -55,6 +57,12 @@ class LetterProcessor
         // send letter to recipientId
         //TODO
         // send to app (with recipientId): letter.toLetterResponse(recipientId, recipientAvatar)
+
+        // update author's lastSentLetterTimestamp
+        userDao.update(letter.authorId, UpdateQuery("lastSentLetterTimestamp" to DateTimeUtils.currentTimeMillis()))
+
+        // update recipient's lastReceivedLetterTimestamp
+        userDao.update(recipientId, UpdateQuery("lastReceivedLetterTimestamp" to DateTimeUtils.currentTimeMillis()))
 
         //return sentTimestamp
         return DateTimeUtils.currentTimeMillis()

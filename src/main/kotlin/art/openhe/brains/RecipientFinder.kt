@@ -20,4 +20,5 @@ class RecipientFinder
     fun find(letter: Letter): User? =
         userDao.findOneByLastReceivedLetterTimestampLessThan(letter.authorId,
             DateTimeUtils.currentTimeMillis().minus(TimeUnit.DAYS.toMillis(1)))
+            ?: userDao.findOneByLastReceivedLetterTimestampLessThan(letter.authorId, DateTimeUtils.currentTimeMillis())
 }

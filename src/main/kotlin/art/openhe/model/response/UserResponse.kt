@@ -9,13 +9,15 @@ data class UserResponse (
     val avatar: String? = null,
     val lastSentLetterTimestamp: Long = 0,
     val lastReceivedLetterTimestamp: Long = 0,
-    val numHearts: Long = 0
+    val numHearts: Long = 0,
+    val firstLogin: Boolean? = false
 
 ) : EntityResponse()
 
-fun User.toUserResponse() =
+fun User.toUserResponse(firstLogin: Boolean? = false) =
     UserResponse(id,
         avatar,
         lastSentLetterTimestamp,
         lastReceivedLetterTimestamp,
-        numHearts)
+        numHearts,
+        firstLogin)

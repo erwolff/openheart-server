@@ -45,7 +45,7 @@ class LoginRequestHandler
                         avatar = "Sloth"
                     ) //TODO: Generate a random avatar
                 )
-            }?.toUserResponse()
+            }?.toUserResponse(firstLogin = true)
 
             ?: UserErrorResponse(Response.Status.INTERNAL_SERVER_ERROR,message = "Unable to create new user")
     }

@@ -1,8 +1,8 @@
 package art.openhe.config
 
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.mongodb.DB
 import com.mongodb.MongoClient
+import com.mongodb.MongoClientURI
 import org.jongo.Jongo
 import org.jongo.MongoCollection
 import org.jongo.marshall.jackson.JacksonMapper
@@ -12,8 +12,8 @@ import javax.inject.Singleton
 class DaoConfig {
 
     @Singleton
-    fun getJongo(): Jongo =
-        Jongo(MongoClient().getDB("openheart"), JacksonMapper.Builder()
+    fun getJongo(envConfig: EnvConfig): Jongo =
+        Jongo(MongoClient(MongoClientURI(envConfig.mongoUrl())).getDB("openheart"), JacksonMapper.Builder()
             .registerModule(KotlinModule())
             .build())
 

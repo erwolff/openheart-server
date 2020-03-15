@@ -1,5 +1,6 @@
 package art.openhe.handler
 
+import art.openhe.brains.LetterSanitizer
 import art.openhe.model.request.LetterRequest
 import art.openhe.model.response.*
 import art.openhe.dao.LetterDao
@@ -15,12 +16,15 @@ import javax.ws.rs.core.Response
 @Singleton
 class LetterRequestHandler
 @Inject constructor(private val letterDao: LetterDao,
+                    private val letterSanitizer: LetterSanitizer,
                     private val producer: SqsMessageProducer) {
 
 
     fun receiveLetter(request: LetterRequest): HandlerResponse {
         //TODO: Validation
-        letterDao.save(request.applyAsSave())?.let { producer.publish(it, Queues.letterProcessor) }
+        letterDao.save(letterSanitizer.sanitize(request.applyAsSave()))?.let {
+            producer.publish(it, Queues.letterProcessor)
+        }
         return EmptyResponse()
     }
 

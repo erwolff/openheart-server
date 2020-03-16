@@ -2,6 +2,7 @@ package art.openhe.model.request
 
 import art.openhe.model.Letter
 import art.openhe.model.LetterCategory
+import art.openhe.util.UpdateQuery
 import org.joda.time.DateTimeUtils
 
 
@@ -14,7 +15,8 @@ data class LetterRequest(
     val replyId: String? = null,
     val category: LetterCategory? = null,
     val body: String? = null,
-    val writtenTimestamp: Long? = null
+    val writtenTimestamp: Long? = null,
+    val readTimestamp: Long? = null
 
 ) {
 
@@ -27,5 +29,12 @@ data class LetterRequest(
             replyId = replyId,
             category = category,
             body = body!!,
-            writtenTimestamp = writtenTimestamp ?: DateTimeUtils.currentTimeMillis())
+            writtenTimestamp = writtenTimestamp ?: DateTimeUtils.currentTimeMillis(),
+            readTimestamp = readTimestamp ?:  0)
+
+    // currently only updating the readTimestamp is allowed
+    fun toUpdateQuery() =
+        UpdateQuery(
+            readTimestamp?.let { "readTimestamp" to it }
+        )
 }

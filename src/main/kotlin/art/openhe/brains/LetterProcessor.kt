@@ -5,6 +5,9 @@ import art.openhe.dao.UserDao
 import art.openhe.model.Letter
 import art.openhe.util.UpdateQuery
 import art.openhe.util.logger
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.Message
+import com.google.firebase.messaging.Notification
 import org.joda.time.DateTimeUtils
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,11 +39,19 @@ class LetterProcessor
             return
         }
 
-        // send letter to recipient
-        val sentTimestamp = sendLetter(letter, recipientId, recipientAvatar)
+        log.info("Sending letter from author ${letter.authorId} to recipient $recipientId")
+
+        // update author's lastSentLetterTimestamp
+        updateAuthor(letter.authorId)
+
+        // update the recipient's lastReceivedLetterTimestamp
+        updateRecipient(recipientId)
 
         // update the letter with the sentTimestamp and recipient
-        updateLetter(letter, sentTimestamp, recipientId, recipientAvatar)
+        updateLetter(letter, recipientId, recipientAvatar)
+
+        // send push notification to recipient
+        notifyRecipient(recipientId, recipientAvatar)
     }
 
     private fun findRecipient(letter: Letter): Pair<String, String>? {
@@ -51,29 +62,32 @@ class LetterProcessor
         }
     }
 
-    private fun sendLetter(letter: Letter, recipientId: String, recipientAvatar: String): Long {
-        log.info("Sending letter from author ${letter.authorId} to recipient $recipientId")
-
-        // send letter to recipientId
-        //TODO
-        // send to app (with recipientId): letter.toLetterResponse(recipientId, recipientAvatar)
-
+    private fun updateAuthor(authorId: String) =
         // update author's lastSentLetterTimestamp
-        userDao.update(letter.authorId, UpdateQuery("lastSentLetterTimestamp" to DateTimeUtils.currentTimeMillis()))
+        userDao.update(authorId, UpdateQuery("lastSentLetterTimestamp" to DateTimeUtils.currentTimeMillis()))
 
+    private fun updateRecipient(recipientId: String) =
         // update recipient's lastReceivedLetterTimestamp
         userDao.update(recipientId, UpdateQuery("lastReceivedLetterTimestamp" to DateTimeUtils.currentTimeMillis()))
 
-        //return sentTimestamp
-        return DateTimeUtils.currentTimeMillis()
-    }
-
-    private fun updateLetter(letter: Letter, sentTimestamp: Long, recipientId: String, recipientAvatar: String) {
-        log.info("Updating letter from author ${letter.authorId}")
-
+    private fun updateLetter(letter: Letter, recipientId: String, recipientAvatar: String) =
         letterDao.update(letter.id, UpdateQuery(
-            "sentTimestamp" to sentTimestamp,
+            "sentTimestamp" to DateTimeUtils.currentTimeMillis(),
             "recipientId" to recipientId,
             "recipientAvatar" to recipientAvatar))
+
+    private fun notifyRecipient(recipientId: String, recipientAvatar: String) {
+        val message = Message.builder().setNotification(
+                Notification.builder()
+                    .setTitle(recipientAvatar)
+                    .setBody("A letter has found its way to you!")
+                    .build())
+            .putData("click_action", "FLUTTER_NOTIFICATION_CLICK")
+            .setTopic(recipientId)
+            .build()
+
+        val response = FirebaseMessaging.getInstance().send(message)
+        log.info("Sent notification to recipient $recipientId - messageId: $response")
     }
+
 }

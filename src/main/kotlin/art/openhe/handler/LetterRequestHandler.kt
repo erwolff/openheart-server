@@ -28,10 +28,14 @@ class LetterRequestHandler
         return EmptyResponse()
     }
 
-
     fun getLetter(id: String): HandlerResponse =
          letterDao.findById(id)?.toLetterResponse()
              ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
+
+    fun updateLetter(id: String, request: LetterRequest): HandlerResponse =
+        //TODO: Validation
+        letterDao.update(id, request.toUpdateQuery())?.toLetterResponse()
+            ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
 
     fun getSentLetters(authorId: String, page: Int, size: Int): HandlerResponse =
         if (page < 1) PageErrorResponse(Response.Status.BAD_REQUEST, page = "Page must be greater than 0")

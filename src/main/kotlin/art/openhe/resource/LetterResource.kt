@@ -15,13 +15,18 @@ class LetterResource
 @Inject constructor(private val handler: LetterRequestHandler): Resource {
 
     @POST
-    fun receiveLetter(request: LetterRequest): Response =
+    fun sendLetter(request: LetterRequest): Response =
         handler.receiveLetter(request).toResponse()
 
     @GET
     @Path("/{id}")
     fun getLetter(@PathParam("id") id: String): Response =
         handler.getLetter(id).toResponse()
+
+    @PUT
+    @Path("/{id}")
+    fun updateLetter(@PathParam("id") id: String, request: LetterRequest): Response =
+        handler.updateLetter(id, request).toResponse()
 
     @GET
     @Path("/sent")

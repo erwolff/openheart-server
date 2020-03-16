@@ -8,6 +8,7 @@ import art.openhe.model.response.HandlerResponse
 import art.openhe.model.response.LoginErrorResponse
 import art.openhe.model.response.UserErrorResponse
 import art.openhe.model.response.toUserResponse
+import art.openhe.util.RandomUtil
 import art.openhe.util.UpdateQuery
 import art.openhe.util.ext.letIfNotEmpty
 import com.google.firebase.auth.FirebaseAuth
@@ -42,8 +43,8 @@ class LoginRequestHandler
                     User(
                         email = it,
                         googleId = googleId,
-                        avatar = "Sloth"
-                    ) //TODO: Generate a random avatar
+                        avatar = RandomUtil.randomAvatar().name
+                    )
                 )
             }?.toUserResponse(firstLogin = true)
 

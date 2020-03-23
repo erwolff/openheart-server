@@ -28,7 +28,7 @@ class LetterProcessor
 
     fun process(letter: Letter) {
         val recipient =
-            if(letter.replyId != null) letter.recipientId to letter.recipientAvatar
+            if(letter.parentId != null) letter.recipientId to letter.recipientAvatar
             else findRecipient(letter)
 
         val recipientId = recipient?.first
@@ -37,6 +37,11 @@ class LetterProcessor
         if (recipient == null || recipientId == null || recipientAvatar == null) {
             log.error("Unable to find recipient for letter from author ${letter.authorId}")
             return
+        }
+
+        if (letter.parentId != null) {
+            // this is a reply, we need to update the original letter
+            updateOriginalLetter(letter.parentId, letter.id)
         }
 
         log.info("Sending letter from author ${letter.authorId} to recipient $recipientId")
@@ -61,6 +66,10 @@ class LetterProcessor
             it.id to it.avatar
         }
     }
+
+    private fun updateOriginalLetter(originalLetterId: String, childId: String) =
+        letterDao.update(originalLetterId, UpdateQuery(
+            "childId" to childId))
 
     private fun updateAuthor(authorId: String) =
         // update author's lastSentLetterTimestamp

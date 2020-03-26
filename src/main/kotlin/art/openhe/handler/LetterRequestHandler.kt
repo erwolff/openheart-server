@@ -9,6 +9,8 @@ import art.openhe.dao.ext.findPageByRecipientId
 import art.openhe.model.Letter
 import art.openhe.queue.Queues
 import art.openhe.queue.producer.SqsMessageProducer
+import art.openhe.util.UpdateQuery
+import org.joda.time.DateTimeUtils
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.ws.rs.core.Response
@@ -47,5 +49,18 @@ class LetterRequestHandler
         else letterDao.findPageByRecipientId(recipientId, page, size)?.toPageResponse()
             ?: PageResponse(listOf<Letter>(), page, size, 0, 0)
 
+    fun heartLetter(id: String): HandlerResponse =
+        // TODO: we should notify the author of this letter
+        letterDao.update(id, UpdateQuery(
+            "heart" to true)
+        )?.toLetterResponse()
+            ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
+
+    fun markAsRead(id: String): HandlerResponse =
+        // TODO: we could potentially notify the author of this letter, but for now I think we shouldn't
+        letterDao.update(id, UpdateQuery(
+            "readTimestamp" to DateTimeUtils.currentTimeMillis())
+        )?.toLetterResponse()
+            ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
 
 }

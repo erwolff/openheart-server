@@ -20,6 +20,7 @@ data class Letter (
     val writtenTimestamp: Long = 0,
     val sentTimestamp: Long = 0,
     val readTimestamp: Long = 0,
+    val hearted: Boolean? = false,
     val flagged: Boolean? = false
 
 ) : DbObject() {
@@ -37,6 +38,7 @@ data class Letter (
         writtenTimestamp: Long? = null,
         sentTimestamp: Long? = null,
         readTimestamp: Long? = null,
+        hearted: Boolean? = null,
         flagged: Boolean? = null
     ): Letter =
         Letter(
@@ -52,6 +54,7 @@ data class Letter (
             writtenTimestamp ?: this.writtenTimestamp,
             sentTimestamp ?: this.sentTimestamp,
             readTimestamp ?: this.readTimestamp,
+            hearted ?: this.hearted,
             flagged ?: this.flagged
         )
 

@@ -30,15 +30,25 @@ class LetterResource
 
     @GET
     @Path("/sent")
-    fun getSentLetters(@QueryParam("id") authorId: String, // TODO: retrieve this from security context
+    fun getSentLetters(@QueryParam("userId") authorId: String, // TODO: retrieve this from security context
                    @QueryParam("page") page: Int,
                    @QueryParam("size") size: Int): Response =
-        handler.getSentLetters(authorId, page, size).toResponse();
+        handler.getSentLetters(authorId, page, size).toResponse()
 
     @GET
     @Path("/received")
-    fun getReceivedLetters(@QueryParam("id") recipientId: String, // TODO: retrieve this from security context
+    fun getReceivedLetters(@QueryParam("userId") recipientId: String, // TODO: retrieve this from security context
                    @QueryParam("page") page: Int,
                    @QueryParam("size") size: Int): Response =
-        handler.getReceivedLetters(recipientId, page, size).toResponse();
+        handler.getReceivedLetters(recipientId, page, size).toResponse()
+
+    @PUT
+    @Path("/{id}/heart")
+    fun heartLetter(@PathParam("id") id: String): Response =
+        handler.heartLetter(id).toResponse()
+
+    @PUT
+    @Path("/{id}/read")
+    fun markAsRead(@PathParam("id") id: String): Response =
+        handler.markAsRead(id).toResponse()
 }

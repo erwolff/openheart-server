@@ -14,6 +14,6 @@ data class User (
     val avatar: String,
     val lastSentLetterTimestamp: Long = 0,
     val lastReceivedLetterTimestamp: Long = 0,
-    val numHearts: Long = 0
+    val hearts: Long = 0
 
 ) : DbObject()

@@ -5,10 +5,10 @@ class UpdateQuery
 constructor(private vararg val fieldAndValues: Pair<String, Any>?) {
 
     fun toQuery() =
-        fieldAndValues.joinToString(prefix = MongoQueryDefs.updatePrefix, postfix = MongoQueryDefs.updatePostfix) {
+        fieldAndValues.joinToString(prefix = MongoQuery.updatePrefix, postfix = MongoQuery.updatePostfix) {
             it?.let {
                 "${it.first}:" + parseValue(it.second)
-            } ?: MongoQueryDefs.updatePrefix + MongoQueryDefs.updatePostfix
+            } ?: MongoQuery.updatePrefix + MongoQuery.updatePostfix
         }
 
     private fun parseValue(value: Any?): String {

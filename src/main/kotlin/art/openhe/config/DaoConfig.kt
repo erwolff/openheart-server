@@ -37,7 +37,6 @@ class DaoConfig {
         jongo.getCollection("letters").ensureIndex("{createdTimestamp:1}")
         jongo.getCollection("letters").ensureIndex("{sentTimestamp:1}")
         jongo.getCollection("letters").ensureIndex("{writtenTimestamp:1}")
-        jongo.getCollection("letters").ensureIndex("{flagged:1}")
         return jongo.getCollection("letters")
     }
 }

@@ -1,7 +1,7 @@
 package art.openhe.handler
 
 import art.openhe.dao.UserDao
-import art.openhe.dao.ext.findByGoogleId
+import art.openhe.dao.ext.findOne
 import art.openhe.model.User
 import art.openhe.model.request.LoginRequest
 import art.openhe.model.response.HandlerResponse
@@ -31,7 +31,7 @@ class LoginRequestHandler
         val email = decodedToken.email
 
         // if googleId matches a user in our system, return the user
-        return userDao.findByGoogleId(googleId)?.let {
+        return userDao.findOne(googleId)?.let {
             // this user already exists, ensure that the stored email matches google's email - if not, update
             if (it.email == decodedToken.email) it.toUserResponse()
             else userDao.update(it.id, UpdateQuery("email" to decodedToken.email))?.toUserResponse()

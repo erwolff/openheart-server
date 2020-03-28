@@ -1,7 +1,6 @@
 package art.openhe.handler
 
 import art.openhe.dao.UserDao
-import art.openhe.dao.ext.findByEmail
 import art.openhe.model.request.UserRequest
 import art.openhe.model.response.*
 import javax.inject.Inject

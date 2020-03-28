@@ -4,11 +4,11 @@ import art.openhe.brains.LetterSanitizer
 import art.openhe.model.request.LetterRequest
 import art.openhe.model.response.*
 import art.openhe.dao.LetterDao
-import art.openhe.dao.ext.findPageByAuthorId
-import art.openhe.dao.ext.findPageByRecipientId
+import art.openhe.dao.ext.find
 import art.openhe.model.Letter
 import art.openhe.queue.Queues
 import art.openhe.queue.producer.SqsMessageProducer
+import art.openhe.util.MongoQuery.Sort
 import art.openhe.util.UpdateQuery
 import org.joda.time.DateTimeUtils
 import javax.inject.Inject
@@ -39,20 +39,24 @@ class LetterRequestHandler
         letterDao.update(id, request.toUpdateQuery())?.toLetterResponse()
             ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
 
-    fun getSentLetters(authorId: String, page: Int, size: Int): HandlerResponse =
+    fun getSentLetters(authorId: String,
+                       page: Int,
+                       size: Int,
+                       hearted: Boolean? = null,
+                       reply: Boolean? = null): HandlerResponse =
         if (page < 1) PageErrorResponse(Response.Status.BAD_REQUEST, page = "Page must be greater than 0")
-        else letterDao.findPageByAuthorId(authorId, page, size)?.toPageResponse()
+        else letterDao.find(page, size, Sort.byWrittenTimestampDesc, authorId, hearted = hearted, reply = reply)?.toPageResponse()
             ?: PageResponse(listOf<Letter>(), page, size, 0, 0)
 
     fun getReceivedLetters(recipientId: String, page: Int, size: Int): HandlerResponse =
         if (page < 1) PageErrorResponse(Response.Status.BAD_REQUEST, page = "Page must be greater than 0")
-        else letterDao.findPageByRecipientId(recipientId, page, size)?.toPageResponse()
+        else letterDao.find(page, size, Sort.bySentTimestampDesc, recipientId = recipientId)?.toPageResponse()
             ?: PageResponse(listOf<Letter>(), page, size, 0, 0)
 
     fun heartLetter(id: String): HandlerResponse =
         // TODO: we should notify the author of this letter
         letterDao.update(id, UpdateQuery(
-            "heart" to true)
+            "hearted" to true)
         )?.toLetterResponse()
             ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
 

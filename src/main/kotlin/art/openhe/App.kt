@@ -2,7 +2,7 @@ package art.openhe
 
 import art.openhe.config.EnvConfig
 import art.openhe.config.OpenHeartConfig
-import art.openhe.queue.QueueManager
+import art.openhe.queue.QueueProvider
 import art.openhe.queue.consumer.SqsMessageConsumer
 import art.openhe.resource.HealthCheckResource
 import art.openhe.resource.Resource
@@ -16,6 +16,7 @@ import io.novocaine.Novocaine
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 import org.reflections.scanners.TypeAnnotationsScanner
+import javax.ws.rs.container.ContainerRequestFilter
 
 
 fun main(args: Array<String>) {
@@ -45,13 +46,18 @@ class App : Application<OpenHeartConfig>() {
 
         // scan for and register all resources implementing Resource
         val reflections = Reflections("art.openhe.resource", SubTypesScanner(false), TypeAnnotationsScanner())
-        val classes = reflections.getSubTypesOf(Resource::class.java)
-        classes.forEach { environment.jersey().register(Novocaine.get(it)) }
+        val resources = reflections.getSubTypesOf(Resource::class.java)
+        resources.forEach { environment.jersey().register(Novocaine.get(it)) }
+
+        val filters = reflections.getSubTypesOf(ContainerRequestFilter::class.java)
+        filters.forEach {
+            environment.jersey().register(it)
+        }
     }
 
     private fun registerConsumers() {
         // instantiate an aws sqs session
-        val queueManager = Novocaine.get(QueueManager::class.java)
+        val queueManager = Novocaine.get(QueueProvider::class.java)
         queueManager?.registerQueues()
 
         // scan for and register all consumers implementing SqsMessageConsumer

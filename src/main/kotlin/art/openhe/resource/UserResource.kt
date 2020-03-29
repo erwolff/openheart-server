@@ -2,30 +2,31 @@ package art.openhe.resource
 
 import art.openhe.handler.UserRequestHandler
 import art.openhe.model.request.UserRequest
+import art.openhe.resource.filter.SessionAuthentication
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.ws.rs.*
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
+import javax.ws.rs.core.SecurityContext
 
 @Path("/users")
+@SessionAuthentication
 @Produces(MediaType.APPLICATION_JSON)
 @Singleton
 class UserResource
 @Inject constructor(private val handler: UserRequestHandler): Resource {
 
     @GET
-    @Path("/{id}")
-    fun getUser(@PathParam("id") id: String): Response =
-        handler.getUser(id).toResponse()
+    fun getUser(@Context securityContext: SecurityContext): Response =
+        handler.getUser(securityContext.userPrincipal.name).toResponse()
 
     @PUT
-    @Path("/{id}")
-    fun updateUser(@PathParam("id") id: String, request: UserRequest): Response =
-        handler.updateUser(id, request).toResponse()
+    fun updateUser(request: UserRequest, @Context securityContext: SecurityContext): Response =
+        handler.updateUser(securityContext.userPrincipal.name, request).toResponse()
 
     @DELETE
-    @Path("/{id}")
-    fun deleteUser(@PathParam("id") id: String): Response =
-        handler.deleteUser(id).toResponse()
+    fun deleteUser(@Context securityContext: SecurityContext): Response =
+        handler.deleteUser(securityContext.userPrincipal.name).toResponse()
 }

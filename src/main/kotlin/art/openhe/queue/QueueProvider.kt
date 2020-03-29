@@ -14,7 +14,7 @@ import javax.jms.MessageProducer
 import javax.jms.Session
 
 @Singleton
-class QueueManager
+class QueueProvider
 @Inject constructor(private val envConfig: EnvConfig) {
 
     private val log = logger()

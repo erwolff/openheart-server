@@ -1,5 +1,6 @@
-package art.openhe.config
+package art.openhe.dao
 
+import art.openhe.config.EnvConfig
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientURI
@@ -9,7 +10,7 @@ import org.jongo.marshall.jackson.JacksonMapper
 import javax.inject.Named
 import javax.inject.Singleton
 
-class DaoConfig {
+class DaoProvider {
 
     @Singleton
     fun getJongo(envConfig: EnvConfig): Jongo =

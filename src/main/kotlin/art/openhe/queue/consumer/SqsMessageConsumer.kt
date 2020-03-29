@@ -1,6 +1,6 @@
 package art.openhe.queue.consumer
 
-import art.openhe.queue.QueueManager
+import art.openhe.queue.QueueProvider
 import art.openhe.queue.ext.letIfNotDuplicate
 import art.openhe.util.logger
 import javax.inject.Inject
@@ -11,14 +11,14 @@ import javax.jms.TextMessage
 
 abstract class SqsMessageConsumer : MessageListener {
 
-    @Inject private lateinit var queueManager: QueueManager
+    @Inject private lateinit var queueProvider: QueueProvider
 
     abstract val queueName: String
 
     private val log = logger()
 
     fun register() {
-        queueManager.registerConsumer(queueName, this)
+        queueProvider.registerConsumer(queueName, this)
     }
 
     override fun onMessage(message: Message?) {

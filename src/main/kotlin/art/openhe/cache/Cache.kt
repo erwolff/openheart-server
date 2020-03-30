@@ -26,7 +26,7 @@ class Cache
     fun setUserIdToSessionToken(userId: String, sessionToken: String) =
         setNX(StringUtils.replace(CacheKey.sessionUserId, CacheKey.userIdString, userId), sessionToken, sessionTokenExpSeconds)
 
-    fun getSessionTokenByUserId(userId: String) =
+    private fun getSessionTokenByUserId(userId: String) =
         get(StringUtils.replace(CacheKey.sessionUserId, CacheKey.userIdString, userId))
 
 
@@ -37,14 +37,31 @@ class Cache
         get(StringUtils.replace(CacheKey.refreshToken, CacheKey.tokenString, refreshToken))
 
 
+    fun setUserIdToRefreshToken(userId: String, refreshToken: String) =
+        setNX(StringUtils.replace(CacheKey.refreshUserId, CacheKey.userIdString, userId), refreshToken, refreshTokenExpSeconds)
+
+    private fun getRefreshTokenByUserId(userId: String) =
+        get(StringUtils.replace(CacheKey.refreshUserId, CacheKey.userIdString, userId))
+
+
     fun endSession(userId: String? = null, sessionToken: String? = null) {
         if (userId == null && sessionToken == null) return
 
-        val sToken = sessionToken ?: getSessionTokenByUserId(userId!!)
         val id = userId ?: getUserIdBySessionToken(sessionToken!!)
+        id?.let {
+            del(StringUtils.replace(CacheKey.sessionUserId, CacheKey.userIdString, it))
+            del(StringUtils.replace(CacheKey.refreshUserId, CacheKey.userIdString, it))
+        }
 
-        del(StringUtils.replace(CacheKey.sessionUserId, CacheKey.userIdString, id))
-        del(StringUtils.replace(CacheKey.sessionToken, CacheKey.tokenString, sToken))
+        val sToken = sessionToken ?: getSessionTokenByUserId(userId!!)
+        sToken?.let  {
+            del(StringUtils.replace(CacheKey.sessionToken, CacheKey.tokenString, sToken))
+        }
+
+        val rToken = id?.let { getRefreshTokenByUserId(it) }
+        rToken?.let {
+            del(StringUtils.replace(CacheKey.refreshToken, CacheKey.tokenString, rToken))
+        }
     }
 
     private fun set(key: String, value:String, expSeconds: Int = defaultExpSeconds) {

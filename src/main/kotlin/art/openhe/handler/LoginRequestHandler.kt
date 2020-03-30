@@ -56,8 +56,9 @@ class LoginRequestHandler
         // generate a new token
         val token = SessionTokenResponse()
         cache.setSessionTokenToUserId(token.sessionToken, userId)
-        cache.setRefreshTokenToUserId(token.refreshToken, userId)
         cache.setUserIdToSessionToken(userId, token.sessionToken)
+        cache.setRefreshTokenToUserId(token.refreshToken, userId)
+        cache.setUserIdToRefreshToken(userId, token.refreshToken)
 
         return token
     }

@@ -48,17 +48,18 @@ class Cache
         if (userId == null && sessionToken == null) return
 
         val id = userId ?: getUserIdBySessionToken(sessionToken!!)
+        val sToken = sessionToken ?: getSessionTokenByUserId(userId!!)
+        val rToken = id?.let { getRefreshTokenByUserId(it) }
+
         id?.let {
             del(StringUtils.replace(CacheKey.sessionUserId, CacheKey.userIdString, it))
             del(StringUtils.replace(CacheKey.refreshUserId, CacheKey.userIdString, it))
         }
 
-        val sToken = sessionToken ?: getSessionTokenByUserId(userId!!)
         sToken?.let  {
             del(StringUtils.replace(CacheKey.sessionToken, CacheKey.tokenString, sToken))
         }
 
-        val rToken = id?.let { getRefreshTokenByUserId(it) }
         rToken?.let {
             del(StringUtils.replace(CacheKey.refreshToken, CacheKey.tokenString, rToken))
         }

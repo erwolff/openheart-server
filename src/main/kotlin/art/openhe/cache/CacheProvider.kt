@@ -6,7 +6,6 @@ import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import redis.clients.jedis.util.JedisURIHelper
 import java.net.URI
-import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 

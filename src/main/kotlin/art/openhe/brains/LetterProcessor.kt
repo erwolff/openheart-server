@@ -8,6 +8,7 @@ import art.openhe.util.logger
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
+import org.apache.commons.lang3.StringUtils
 import org.joda.time.DateTimeUtils
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,11 +25,15 @@ class LetterProcessor
                     private val userDao: UserDao,
                     private val recipientFinder: RecipientFinder) {
 
+    private val notificationTxt = "A letter has found its way to you!";
+    private val notificationReplyTxt = "You've received a reply to your letter!";
+
     private val log = logger()
 
     fun process(letter: Letter) {
+        val isReply = StringUtils.isNotBlank(letter.parentId)
         val recipient =
-            if(letter.parentId != null) letter.recipientId to letter.recipientAvatar
+            if(isReply) letter.recipientId to letter.recipientAvatar
             else findRecipient(letter)
 
         val recipientId = recipient?.first
@@ -39,9 +44,9 @@ class LetterProcessor
             return
         }
 
-        if (letter.parentId != null) {
+        if (isReply) {
             // this is a reply, we need to update the original letter
-            updateOriginalLetter(letter.parentId, letter.id)
+            updateOriginalLetter(letter.parentId!!, letter.id)
         }
 
         log.info("Sending letter from author ${letter.authorId} to recipient $recipientId")
@@ -49,14 +54,14 @@ class LetterProcessor
         // update author's lastSentLetterTimestamp
         updateAuthor(letter.authorId)
 
-        // update the recipient's lastReceivedLetterTimestamp
-        updateRecipient(recipientId)
+        // update the recipient's lastReceivedLetterTimestamp - but only if this is not a reply
+        if (!isReply) updateRecipient(recipientId)
 
         // update the letter with the sentTimestamp and recipient
         updateLetter(letter, recipientId, recipientAvatar)
 
         // send push notification to recipient
-        notifyRecipient(recipientId, recipientAvatar)
+        notifyRecipient(letter.id, recipientId, recipientAvatar, isReply)
     }
 
     private fun findRecipient(letter: Letter): Pair<String, String>? {
@@ -85,13 +90,14 @@ class LetterProcessor
             "recipientId" to recipientId,
             "recipientAvatar" to recipientAvatar))
 
-    private fun notifyRecipient(recipientId: String, recipientAvatar: String) {
+    private fun notifyRecipient(letterId: String, recipientId: String, recipientAvatar: String, isReply: Boolean) {
         val message = Message.builder().setNotification(
                 Notification.builder()
-                    .setTitle(recipientAvatar)
-                    .setBody("A letter has found its way to you!")
+                    .setTitle("Dear $recipientAvatar")
+                    .setBody(if (isReply) notificationReplyTxt else notificationTxt)
                     .build())
             .putData("click_action", "FLUTTER_NOTIFICATION_CLICK")
+            .putData("letterId", letterId)
             .setTopic(recipientId)
             .build()
 

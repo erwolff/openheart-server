@@ -35,7 +35,7 @@ class LoginRequestHandler
                     avatar = RandomUtil.randomAvatar().name))
 
             if (user == null)
-                return UserErrorResponse(Response.Status.INTERNAL_SERVER_ERROR,message = "Unable to create new user")
+                return UserErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, message = "Unable to create new user")
         }
 
         val token = generateSessionToken(user.id)

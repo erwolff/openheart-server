@@ -1,6 +1,7 @@
 package art.openhe.handler
 
 import art.openhe.brains.LetterSanitizer
+import art.openhe.brains.Notifier
 import art.openhe.model.request.LetterRequest
 import art.openhe.model.response.*
 import art.openhe.dao.LetterDao
@@ -19,13 +20,14 @@ import javax.ws.rs.core.Response
 class LetterRequestHandler
 @Inject constructor(private val letterDao: LetterDao,
                     private val letterSanitizer: LetterSanitizer,
-                    private val producer: SqsMessageProducer) {
+                    private val producer: SqsMessageProducer,
+                    private val notifier: Notifier) {
 
 
     fun receiveLetter(request: LetterRequest): HandlerResponse {
         //TODO: Validation
         letterDao.save(letterSanitizer.sanitize(request.applyAsSave()))?.let {
-            producer.publish(it, Queues.letterProcessor)
+            producer.publish(it, Queues.mailman)
         }
         return EmptyResponse()
     }
@@ -50,21 +52,28 @@ class LetterRequestHandler
 
     fun getReceivedLetters(recipientId: String, page: Int, size: Int): HandlerResponse =
         if (page < 1) PageErrorResponse(Response.Status.BAD_REQUEST, page = "Page must be greater than 0")
-        else letterDao.find(page, size, Sort.bySentTimestampDesc, recipientId = recipientId)?.toPageResponse()
+        else letterDao.find(page, size, Sort.bySentTimestampDesc, recipientId = recipientId, deleted = false)?.toPageResponse()
             ?: PageResponse(listOf<Letter>(), page, size, 0, 0)
 
     fun heartLetter(id: String): HandlerResponse =
-        // TODO: we should notify the author of this letter
-        letterDao.update(id, UpdateQuery(
-            "hearted" to true)
-        )?.toLetterResponse()
+        letterDao.update(id, UpdateQuery("hearted" to true))?.let {
+            notifier.receivedHeart(it.id, it.recipientAvatar, it.authorId, it.authorAvatar)
+        }?.toEmptyResponse()
+            ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
+
+    /**
+     * Flags and deletes a letter
+     */
+    fun reportLetter(id: String): HandlerResponse =
+        letterDao.update(id, UpdateQuery("flagged" to true, "deleted" to true))?.toEmptyResponse()
             ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
 
     fun markAsRead(id: String): HandlerResponse =
-        // TODO: we could potentially notify the author of this letter, but for now I think we shouldn't
-        letterDao.update(id, UpdateQuery(
-            "readTimestamp" to DateTimeUtils.currentTimeMillis())
-        )?.toLetterResponse()
+        letterDao.update(id, UpdateQuery("readTimestamp" to DateTimeUtils.currentTimeMillis()))?.toEmptyResponse()
+            ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
+
+    fun deleteLetter(id: String): HandlerResponse =
+        letterDao.update(id, UpdateQuery("deleted" to true))?.toEmptyResponse()
             ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
 
 }

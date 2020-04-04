@@ -21,11 +21,12 @@ data class Letter (
     val sentTimestamp: Long = 0,
     val readTimestamp: Long = 0,
     val hearted: Boolean? = false,
-    val flagged: Boolean? = false
+    val flagged: Boolean? = false,
+    val deleted: Boolean? = false
 
 ) : DbObject() {
 
-    fun update(
+    fun clone(
         id: String? = null,
         authorId: String? = null,
         authorAvatar: String? = null,
@@ -39,7 +40,8 @@ data class Letter (
         sentTimestamp: Long? = null,
         readTimestamp: Long? = null,
         hearted: Boolean? = null,
-        flagged: Boolean? = null
+        flagged: Boolean? = null,
+        deleted: Boolean? = null
     ): Letter =
         Letter(
             id ?: this.id,
@@ -55,7 +57,8 @@ data class Letter (
             sentTimestamp ?: this.sentTimestamp,
             readTimestamp ?: this.readTimestamp,
             hearted ?: this.hearted,
-            flagged ?: this.flagged
+            flagged ?: this.flagged,
+            deleted ?: this.deleted
         )
 
 }

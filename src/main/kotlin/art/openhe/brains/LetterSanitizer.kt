@@ -10,7 +10,7 @@ class LetterSanitizer {
     // TODO: This is just a baseline sanitization
     fun sanitize(letter: Letter): Letter {
         val result = ProfanityFilter.filter(letter.body)
-        return letter.update(body = result.first, flagged = result.second)
+        return letter.clone(body = result.first, flagged = result.second)
     }
 
 

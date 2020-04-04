@@ -5,6 +5,7 @@ import art.openhe.model.Letter
 import art.openhe.model.Page
 import art.openhe.util.MongoQuery.Letters.authorId
 import art.openhe.util.MongoQuery.Letters.childId
+import art.openhe.util.MongoQuery.Letters.deleted
 import art.openhe.util.MongoQuery.Letters.hearted
 import art.openhe.util.MongoQuery.Letters.parentId
 import art.openhe.util.MongoQuery.Letters.recipientId
@@ -36,7 +37,8 @@ fun LetterDao.find(
     parentId: String? = null,
     childId: String? = null,
     hearted: Boolean? = null,
-    reply: Boolean? = null
+    reply: Boolean? = null,
+    deleted: Boolean? = null
 ): Page<Letter>? {
 
     val query = andQuery(authorId, recipientId, parentId, childId, hearted, reply)
@@ -63,7 +65,8 @@ private fun andQuery(
     parentId: String? = null,
     childId: String? = null,
     hearted: Boolean? = null,
-    reply: Boolean? = null
+    reply: Boolean? = null,
+    deleted: Boolean? = null
 ): String {
     val criteria = mutableListOf<String>().apply {
         authorId?.let { add(authorId(it)) }
@@ -72,6 +75,7 @@ private fun andQuery(
         childId?.let { add(childId(it)) }
         hearted?.let { add(hearted(it)) }
         reply?.let { add(parentId(if (reply) ne(null) else null)) }
+        deleted?.let { add(deleted(it)) }
     }.toTypedArray()
 
     return when {

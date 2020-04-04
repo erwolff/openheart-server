@@ -44,6 +44,8 @@ object MongoQuery {
         fun childId(childId: String?) = childId?.let { "{ childId: \"$childId\" }" } ?: "{ childId: null }"
         
         fun hearted(hearted: Boolean?) = "{ hearted: $hearted }"
+
+        fun deleted(deleted: Boolean?) = "{ deleted: $deleted }"
     
     }
 

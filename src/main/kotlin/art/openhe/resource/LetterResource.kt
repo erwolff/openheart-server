@@ -29,10 +29,11 @@ class LetterResource
     fun getLetter(@PathParam("id") id: String): Response =
         handler.getLetter(id).toResponse()
 
-    @PUT
+    // TODO: Currently we don't allow blanket updates
+    /*@PUT
     @Path("/{id}")
     fun updateLetter(@PathParam("id") id: String, request: LetterRequest): Response =
-        handler.updateLetter(id, request).toResponse()
+        handler.updateLetter(id, request).toResponse()*/
 
     @GET
     @Path("/sent")
@@ -50,13 +51,40 @@ class LetterResource
                            @Context securityContext: SecurityContext): Response =
         handler.getReceivedLetters(securityContext.userPrincipal.name, page, size).toResponse()
 
+    /**
+     * Sets hearted: true
+     * Success: 204 No Content
+     */
     @PUT
     @Path("/{id}/heart")
     fun heartLetter(@PathParam("id") id: String): Response =
         handler.heartLetter(id).toResponse()
 
+    /**
+     * Sets flagged: true and deleted: true
+     * Success: 204 No Content
+     */
+    @PUT
+    @Path("/{id}/report")
+    fun reportLetter(@PathParam("id") id: String): Response =
+        handler.reportLetter(id).toResponse()
+
+    /**
+     * Sets readTimestamp: now
+     * Success: 204 No Content
+     */
     @PUT
     @Path("/{id}/read")
     fun markAsRead(@PathParam("id") id: String): Response =
         handler.markAsRead(id).toResponse()
+
+
+    /**
+     * Sets deleted: true
+     * Success: 204 No Content
+     */
+    @DELETE
+    @Path("/{id}")
+    fun deleteLetter(@PathParam("id") id: String): Response =
+        handler.deleteLetter(id).toResponse()
 }

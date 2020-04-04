@@ -16,21 +16,21 @@ import javax.inject.Singleton
 /**
  * Receives new letters,
  * finds recipient,
+ * updates the parent letter (adding as child)
+ * updates author's lastSentLetterTimestamp,
+ * updates recipient's lastReceivedLetterTimestamp
  * sends the letter to the recipient,
- * stores the letter
  */
 @Singleton
-class LetterProcessor
+class Mailman
 @Inject constructor(private val letterDao: LetterDao,
                     private val userDao: UserDao,
-                    private val recipientFinder: RecipientFinder) {
-
-    private val notificationTxt = "A letter has found its way to you!";
-    private val notificationReplyTxt = "You've received a reply to your letter!";
+                    private val recipientFinder: RecipientFinder,
+                    private val notifier: Notifier) {
 
     private val log = logger()
 
-    fun process(letter: Letter) {
+    fun mail(letter: Letter) {
         val isReply = StringUtils.isNotBlank(letter.parentId)
         val recipient =
             if(isReply) letter.recipientId to letter.recipientAvatar
@@ -55,13 +55,19 @@ class LetterProcessor
         updateAuthor(letter.authorId)
 
         // update the recipient's lastReceivedLetterTimestamp - but only if this is not a reply
-        if (!isReply) updateRecipient(recipientId)
+        if (!isReply) {
+            updateRecipient(recipientId)
+        }
 
         // update the letter with the sentTimestamp and recipient
         updateLetter(letter, recipientId, recipientAvatar)
 
-        // send push notification to recipient
-        notifyRecipient(letter.id, recipientId, recipientAvatar, isReply)
+        if (isReply) {
+            notifier.receivedReply(letter.id, recipientId, recipientAvatar)
+        }
+        else {
+            notifier.receivedLetter(letter.id, recipientId, recipientAvatar)
+        }
     }
 
     private fun findRecipient(letter: Letter): Pair<String, String>? {
@@ -89,20 +95,4 @@ class LetterProcessor
             "sentTimestamp" to DateTimeUtils.currentTimeMillis(),
             "recipientId" to recipientId,
             "recipientAvatar" to recipientAvatar))
-
-    private fun notifyRecipient(letterId: String, recipientId: String, recipientAvatar: String, isReply: Boolean) {
-        val message = Message.builder().setNotification(
-                Notification.builder()
-                    .setTitle("Dear $recipientAvatar")
-                    .setBody(if (isReply) notificationReplyTxt else notificationTxt)
-                    .build())
-            .putData("click_action", "FLUTTER_NOTIFICATION_CLICK")
-            .putData("letterId", letterId)
-            .setTopic(recipientId)
-            .build()
-
-        val response = FirebaseMessaging.getInstance().send(message)
-        log.info("Sent notification to recipient $recipientId - messageId: $response")
-    }
-
 }

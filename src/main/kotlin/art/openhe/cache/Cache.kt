@@ -1,6 +1,7 @@
 package art.openhe.cache
 
 import org.apache.commons.lang3.StringUtils
+import org.joda.time.DateTimeUtils
 import redis.clients.jedis.params.SetParams
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -42,6 +43,10 @@ class Cache
 
     private fun getRefreshTokenByUserId(userId: String) =
         get(StringUtils.replace(CacheKey.refreshUserId, CacheKey.userIdString, userId))
+
+    fun isDuplicateSqsMessage(messageId: String) =
+        // reverse the setNX return type to match expected behavior of method name
+        !setNX(StringUtils.replace(CacheKey.sqsMessageId, CacheKey.messageIdString, messageId), DateTimeUtils.currentTimeMillis().toString())
 
 
     fun endSession(userId: String? = null, sessionToken: String? = null) {

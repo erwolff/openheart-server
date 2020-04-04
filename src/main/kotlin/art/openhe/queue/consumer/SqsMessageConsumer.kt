@@ -1,7 +1,7 @@
 package art.openhe.queue.consumer
 
+import art.openhe.cache.Cache
 import art.openhe.queue.QueueProvider
-import art.openhe.queue.ext.letIfNotDuplicate
 import art.openhe.util.logger
 import javax.inject.Inject
 import javax.jms.Message
@@ -12,6 +12,7 @@ import javax.jms.TextMessage
 abstract class SqsMessageConsumer : MessageListener {
 
     @Inject private lateinit var queueProvider: QueueProvider
+    @Inject private lateinit var cache: Cache
 
     abstract val queueName: String
 
@@ -23,8 +24,10 @@ abstract class SqsMessageConsumer : MessageListener {
 
     override fun onMessage(message: Message?) {
         try {
-            message?.letIfNotDuplicate {
-                onMessage((it as TextMessage).text)
+            message?.let {
+                if (!cache.isDuplicateSqsMessage(it.jmsMessageID)) {
+                    onMessage((it as TextMessage).text)
+                }
             }
         } catch (e: Exception) {
             log.error("Error processing message: ${message.toString()}", e)

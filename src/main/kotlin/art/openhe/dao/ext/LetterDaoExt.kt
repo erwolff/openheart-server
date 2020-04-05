@@ -41,7 +41,7 @@ fun LetterDao.find(
     deleted: Boolean? = null
 ): Page<Letter>? {
 
-    val query = andQuery(authorId, recipientId, parentId, childId, hearted, reply)
+    val query = andQuery(authorId, recipientId, parentId, childId, hearted, reply, deleted)
 
     val totalResults = collection.runQuery { it.count(query) } ?: 0
 

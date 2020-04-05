@@ -1,6 +1,7 @@
 package art.openhe.resource.filter.authorization
 
 import art.openhe.dao.LetterDao
+import art.openhe.model.Letter
 import art.openhe.model.response.LetterErrorResponse
 import io.novocaine.Novocaine
 import javax.annotation.Priority
@@ -35,11 +36,21 @@ class AuthorRecipientAuthorizationFilter : ContainerRequestFilter {
 
         val letter = Novocaine.get(LetterDao::class.java).findById(letterIds[0])
 
-        if (letter == null || (userId != letter.recipientId && userId != letter.authorId)) {
+        if (!isAuthorOrRecipient(userId, letter) || !isViewable(userId, letter!!)) {
             requestContext.abortWith(LetterErrorResponse(Response.Status.NOT_FOUND,
                     "A letter with id ${letterIds[0]} does not exist").toResponse())
         }
 
         // valid
     }
+
+
+    private fun isAuthorOrRecipient(userId: String, letter: Letter?) =
+        letter != null && (userId == letter.recipientId || userId == letter.authorId)
+
+    /**
+     * A letter is viewable if the userId is the author or if the letter hasn't been deleted
+     */
+    private fun isViewable(userId: String, letter: Letter) =
+        userId == letter.authorId || letter.deleted != true
 }

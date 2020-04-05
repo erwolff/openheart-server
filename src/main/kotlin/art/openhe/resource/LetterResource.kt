@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
 @Path("/letters")
-//@SessionAuthentication
+@SessionAuthentication
 @Produces(MediaType.APPLICATION_JSON)
 @Singleton
 class LetterResource

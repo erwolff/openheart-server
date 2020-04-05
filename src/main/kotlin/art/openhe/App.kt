@@ -49,6 +49,7 @@ class App : Application<OpenHeartConfig>() {
         val resources = reflections.getSubTypesOf(Resource::class.java)
         resources.forEach { environment.jersey().register(Novocaine.get(it)) }
 
+        // scan for and register all request filters - these cannot be singletons from novocaine
         val filters = reflections.getSubTypesOf(ContainerRequestFilter::class.java)
         filters.forEach {
             environment.jersey().register(it)

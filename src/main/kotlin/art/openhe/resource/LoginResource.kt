@@ -1,14 +1,11 @@
 package art.openhe.resource
 
 import art.openhe.handler.LoginRequestHandler
-import art.openhe.model.request.LoginRequest
-import art.openhe.model.response.SessionTokenResponse
-import art.openhe.resource.filter.FirebaseAuthentication
-import art.openhe.resource.filter.RefreshTokenAuthentication
+import art.openhe.resource.filter.authentication.FirebaseAuthentication
+import art.openhe.resource.filter.authentication.RefreshTokenAuthentication
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.ws.rs.GET
-import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.core.Context

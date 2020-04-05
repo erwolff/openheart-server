@@ -1,4 +1,4 @@
-package art.openhe.resource.filter
+package art.openhe.resource.filter.authentication
 
 import javax.ws.rs.NameBinding
 

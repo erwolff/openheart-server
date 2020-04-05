@@ -1,4 +1,4 @@
-package art.openhe.resource.filter
+package art.openhe.resource.filter.authentication
 
 import art.openhe.util.ext.generateSecurityContext
 import com.google.firebase.auth.FirebaseAuth
@@ -12,7 +12,10 @@ import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.Provider
 
-
+/**
+ * Ensures the token supplied in the header is a valid firebase auth token
+ * Sets userPrinciple to "googleId::email"
+ */
 @FirebaseAuthentication
 @Singleton
 @Provider

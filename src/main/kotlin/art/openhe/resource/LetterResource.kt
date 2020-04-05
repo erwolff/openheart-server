@@ -2,7 +2,9 @@ package art.openhe.resource
 
 import art.openhe.handler.LetterRequestHandler
 import art.openhe.model.request.LetterRequest
-import art.openhe.resource.filter.SessionAuthentication
+import art.openhe.resource.filter.authentication.SessionAuthentication
+import art.openhe.resource.filter.authorization.AuthorRecipientAuthorization
+import art.openhe.resource.filter.authorization.RecipientAuthorization
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.ws.rs.*
@@ -12,20 +14,20 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
 @Path("/letters")
-@SessionAuthentication
+//@SessionAuthentication
 @Produces(MediaType.APPLICATION_JSON)
 @Singleton
 class LetterResource
 @Inject constructor(private val handler: LetterRequestHandler): Resource {
 
     @POST
-    fun sendLetter(request: LetterRequest): Response =
-        handler.receiveLetter(request).toResponse()
-
-    // TODO: Add a PathLetterId filter which checks the user has access to the letter
+    fun writeLetter(request: LetterRequest,
+                    @Context securityContext: SecurityContext): Response =
+        handler.writeLetter(request, securityContext.userPrincipal.name).toResponse()
 
     @GET
     @Path("/{id}")
+    @AuthorRecipientAuthorization
     fun getLetter(@PathParam("id") id: String): Response =
         handler.getLetter(id).toResponse()
 
@@ -57,6 +59,7 @@ class LetterResource
      */
     @PUT
     @Path("/{id}/heart")
+    @RecipientAuthorization
     fun heartLetter(@PathParam("id") id: String): Response =
         handler.heartLetter(id).toResponse()
 
@@ -66,6 +69,7 @@ class LetterResource
      */
     @PUT
     @Path("/{id}/report")
+    @RecipientAuthorization
     fun reportLetter(@PathParam("id") id: String): Response =
         handler.reportLetter(id).toResponse()
 
@@ -75,6 +79,7 @@ class LetterResource
      */
     @PUT
     @Path("/{id}/read")
+    @RecipientAuthorization
     fun markAsRead(@PathParam("id") id: String): Response =
         handler.markAsRead(id).toResponse()
 
@@ -85,6 +90,7 @@ class LetterResource
      */
     @DELETE
     @Path("/{id}")
+    @RecipientAuthorization
     fun deleteLetter(@PathParam("id") id: String): Response =
         handler.deleteLetter(id).toResponse()
 }

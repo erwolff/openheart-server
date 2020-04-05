@@ -2,7 +2,7 @@ package art.openhe.resource
 
 import art.openhe.handler.UserRequestHandler
 import art.openhe.model.request.UserRequest
-import art.openhe.resource.filter.SessionAuthentication
+import art.openhe.resource.filter.authentication.SessionAuthentication
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.ws.rs.*

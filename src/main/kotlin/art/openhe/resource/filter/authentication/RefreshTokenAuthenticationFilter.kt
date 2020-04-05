@@ -1,10 +1,9 @@
-package art.openhe.resource.filter
+package art.openhe.resource.filter.authentication
 
 import art.openhe.cache.Cache
 import art.openhe.util.ext.generateSecurityContext
 import io.novocaine.Novocaine
 import javax.annotation.Priority
-import javax.inject.Inject
 import javax.inject.Singleton
 import javax.ws.rs.Priorities
 import javax.ws.rs.WebApplicationException
@@ -14,6 +13,10 @@ import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.Provider
 
+/**
+ * Ensures the token supplied in the header is a valid refresh token
+ * Sets userPrinciple to the userId
+ */
 @RefreshTokenAuthentication
 @Singleton
 @Provider

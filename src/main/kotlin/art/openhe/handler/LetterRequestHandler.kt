@@ -24,9 +24,9 @@ class LetterRequestHandler
                     private val notifier: Notifier) {
 
 
-    fun receiveLetter(request: LetterRequest): HandlerResponse {
+    fun writeLetter(request: LetterRequest, authorId: String): HandlerResponse {
         //TODO: Validation
-        letterDao.save(letterSanitizer.sanitize(request.applyAsSave()))?.let {
+        letterDao.save(letterSanitizer.sanitize(request.applyAsSave(authorId)))?.let {
             producer.publish(it, Queues.mailman)
         }
         return EmptyResponse()

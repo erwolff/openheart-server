@@ -5,11 +5,18 @@ import art.openhe.brains.Notifier
 import art.openhe.model.request.LetterRequest
 import art.openhe.model.response.*
 import art.openhe.dao.LetterDao
+import art.openhe.dao.criteria.BoolCriteria
+import art.openhe.dao.criteria.BoolCriteria.Companion.eq
+import art.openhe.dao.criteria.BoolCriteria.Companion.isFalse
+import art.openhe.dao.criteria.Sort
+import art.openhe.dao.criteria.StringCriteria
+import art.openhe.dao.criteria.StringCriteria.Companion.eq
+import art.openhe.dao.criteria.StringCriteria.Companion.isNotNull
+import art.openhe.dao.criteria.StringCriteria.Companion.isNull
 import art.openhe.dao.ext.find
 import art.openhe.model.Letter
 import art.openhe.queue.Queues
 import art.openhe.queue.producer.SqsMessageProducer
-import art.openhe.util.MongoQuery.Sort
 import art.openhe.util.UpdateQuery
 import org.joda.time.DateTimeUtils
 import javax.inject.Inject
@@ -47,17 +54,30 @@ class LetterRequestHandler
                        hearted: Boolean? = null,
                        reply: Boolean? = null): HandlerResponse =
         if (page < 1) PageErrorResponse(Response.Status.BAD_REQUEST, page = "Page must be greater than 0")
-        else letterDao.find(page, size, Sort.byWrittenTimestampDesc, authorId, hearted = hearted, reply = reply)?.toPageResponse()
+        else letterDao.find(
+            page = page,
+            size = size,
+            sort = Sort.Letters.byWrittenTimestampDesc(),
+            authorId = eq(authorId),
+            hearted = eq(hearted),
+            parentId = reply?.let { if (it) isNotNull() else isNull() }
+        )?.toPageResponse()
             ?: PageResponse(listOf<Letter>(), page, size, 0, 0)
 
     fun getReceivedLetters(recipientId: String, page: Int, size: Int): HandlerResponse =
         if (page < 1) PageErrorResponse(Response.Status.BAD_REQUEST, page = "Page must be greater than 0")
-        else letterDao.find(page, size, Sort.bySentTimestampDesc, recipientId = recipientId, deleted = false)?.toPageResponse()
+        else letterDao.find(
+            page = page,
+            size = size,
+            sort = Sort.Letters.bySentTimestampDesc(),
+            recipientId = eq(recipientId),
+            deleted = isFalse()
+        )?.toPageResponse()
             ?: PageResponse(listOf<Letter>(), page, size, 0, 0)
 
     fun heartLetter(id: String): HandlerResponse =
-        letterDao.update(id, UpdateQuery("hearted" to true))?.let {
-            notifier.receivedHeart(it.id, it.recipientAvatar, it.authorId, it.authorAvatar)
+        letterDao.update(id, UpdateQuery("hearted" to true))?.apply {
+            notifier.receivedHeart(id, recipientAvatar, authorId, authorAvatar)
         }?.toEmptyResponse()
             ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
 

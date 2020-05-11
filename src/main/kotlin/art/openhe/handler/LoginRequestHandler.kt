@@ -2,6 +2,8 @@ package art.openhe.handler
 
 import art.openhe.cache.Cache
 import art.openhe.dao.UserDao
+import art.openhe.dao.criteria.StringCriteria
+import art.openhe.dao.criteria.StringCriteria.Companion.eq
 import art.openhe.dao.ext.findOne
 import art.openhe.model.User
 import art.openhe.model.response.*
@@ -21,7 +23,7 @@ class LoginRequestHandler
         var firstLogin = false
 
         // if googleId matches a user in our system, return the user
-        var user = userDao.findOne(googleId)?.let {
+        var user = userDao.findOne(googleId = eq(googleId))?.let {
             // this user already exists, ensure that the stored email matches google's email - if not, update
             if (it.email == email) it
             else userDao.update(it.id, UpdateQuery("email" to email))

@@ -1,7 +1,10 @@
 package art.openhe.brains
 
 import art.openhe.dao.UserDao
-import art.openhe.dao.ext.findOneByLastReceivedLetterTimestampLessThan
+import art.openhe.dao.criteria.IdCriteria.Companion.ne
+import art.openhe.dao.criteria.NumberCriteria
+import art.openhe.dao.criteria.Sort
+import art.openhe.dao.ext.findOne
 import art.openhe.model.Letter
 import art.openhe.model.User
 import art.openhe.util.logger
@@ -18,7 +21,13 @@ class RecipientFinder
 
     //TODO: We'll want to do some more stuff here, but this is the basic implementation
     fun find(letter: Letter): User? =
-        userDao.findOneByLastReceivedLetterTimestampLessThan(letter.authorId,
-            DateTimeUtils.currentTimeMillis().minus(TimeUnit.DAYS.toMillis(1)))
-            ?: userDao.findOneByLastReceivedLetterTimestampLessThan(letter.authorId, DateTimeUtils.currentTimeMillis())
+        userDao.findOne(
+            sort = Sort.Users.byLastReceivedLetterTimestampAsc(),
+            id = ne(letter.authorId),
+            lastReceivedLetterTimestamp = NumberCriteria.lte(DateTimeUtils.currentTimeMillis().minus(TimeUnit.DAYS.toMillis(1)))
+        )
+            ?: userDao.findOne(
+                sort = Sort.Users.byLastReceivedLetterTimestampAsc(),
+                id = ne(letter.authorId)
+            )
 }

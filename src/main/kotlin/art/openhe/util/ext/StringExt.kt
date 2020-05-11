@@ -11,13 +11,11 @@ fun <T> String?.letIfNotEmpty(lambda: (String) -> T): T? =
     else lambda(this)
 
 fun <T> String?.letAsObjectId(lambda: (ObjectId) -> T): T? =
-    if (this.isNullOrEmpty())
+    try {
+        if (!ObjectId.isValid(this)) null
+        else lambda(ObjectId(this))
+    } catch (e: IllegalArgumentException) {
         null
-    else
-        try {
-            lambda(ObjectId(this))
-        } catch (e: IllegalArgumentException) {
-            null
-        }
+    }
 
 fun <T> String.mapTo(toClass: Class<T>) = Mapper.fromString(this, toClass)

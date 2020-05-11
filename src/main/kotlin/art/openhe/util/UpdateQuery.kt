@@ -4,11 +4,14 @@ package art.openhe.util
 class UpdateQuery
 constructor(private vararg val fieldAndValues: Pair<String, Any>?) {
 
+    private val updatePrefix = "{ \$set: { "
+    private val updatePostfix = " } }"
+
     fun toQuery() =
-        fieldAndValues.joinToString(prefix = MongoQuery.updatePrefix, postfix = MongoQuery.updatePostfix) {
+        fieldAndValues.joinToString(prefix = updatePrefix, postfix = updatePostfix) {
             it?.let {
                 "${it.first}:" + parseValue(it.second)
-            } ?: MongoQuery.updatePrefix + MongoQuery.updatePostfix
+            } ?: updatePrefix + updatePostfix
         }
 
     private fun parseValue(value: Any?): String {

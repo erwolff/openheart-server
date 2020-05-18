@@ -2,7 +2,8 @@ package art.openhe.brains
 
 import art.openhe.dao.UserDao
 import art.openhe.dao.criteria.IdCriteria.Companion.ne
-import art.openhe.dao.criteria.NumberCriteria
+import art.openhe.dao.criteria.NumberCriteria.Companion.gt
+import art.openhe.dao.criteria.NumberCriteria.Companion.lte
 import art.openhe.dao.criteria.Sort
 import art.openhe.dao.ext.findOne
 import art.openhe.model.Letter
@@ -24,10 +25,12 @@ class RecipientFinder
         userDao.findOne(
             sort = Sort.Users.byLastReceivedLetterTimestampAsc(),
             id = ne(letter.authorId),
-            lastReceivedLetterTimestamp = NumberCriteria.lte(DateTimeUtils.currentTimeMillis().minus(TimeUnit.DAYS.toMillis(1)))
+            lastSentLetterTimestamp = gt(0),
+            lastReceivedLetterTimestamp = lte(DateTimeUtils.currentTimeMillis().minus(TimeUnit.DAYS.toMillis(1)))
         )
             ?: userDao.findOne(
                 sort = Sort.Users.byLastReceivedLetterTimestampAsc(),
-                id = ne(letter.authorId)
+                id = ne(letter.authorId),
+                lastSentLetterTimestamp = gt(0)
             )
 }

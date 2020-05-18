@@ -2,6 +2,8 @@ package art.openhe.brains
 
 import art.openhe.dao.LetterDao
 import art.openhe.dao.UserDao
+import art.openhe.dao.criteria.StringCriteria.Companion.eq
+import art.openhe.dao.ext.count
 import art.openhe.model.Letter
 import art.openhe.util.UpdateQuery
 import art.openhe.util.logger
@@ -51,9 +53,6 @@ class Mailman
 
         log.info("Sending letter from author ${letter.authorId} to recipient $recipientId")
 
-        // update author's lastSentLetterTimestamp
-        updateAuthor(letter.authorId)
-
         // update the recipient's lastReceivedLetterTimestamp - but only if this is not a reply
         if (!isReply) {
             updateRecipient(recipientId)
@@ -67,6 +66,11 @@ class Mailman
         }
         else {
             notifier.receivedLetter(letter.id, recipientId, recipientAvatar)
+        }
+
+        if (isFirstLetterByAuthor(letter.authorId)) {
+            log.info("Letter ${letter.id} is first letter written by author ${letter.authorId}")
+            //TODO: send auto-response
         }
     }
 
@@ -82,10 +86,6 @@ class Mailman
         letterDao.update(originalLetterId, UpdateQuery(
             "childId" to childId))
 
-    private fun updateAuthor(authorId: String) =
-        // update author's lastSentLetterTimestamp
-        userDao.update(authorId, UpdateQuery("lastSentLetterTimestamp" to DateTimeUtils.currentTimeMillis()))
-
     private fun updateRecipient(recipientId: String) =
         // update recipient's lastReceivedLetterTimestamp
         userDao.update(recipientId, UpdateQuery("lastReceivedLetterTimestamp" to DateTimeUtils.currentTimeMillis()))
@@ -95,4 +95,7 @@ class Mailman
             "sentTimestamp" to DateTimeUtils.currentTimeMillis(),
             "recipientId" to recipientId,
             "recipientAvatar" to recipientAvatar))
+
+    private fun isFirstLetterByAuthor(authorId: String) =
+        letterDao.count(authorId = eq(authorId)) <= 1
 }

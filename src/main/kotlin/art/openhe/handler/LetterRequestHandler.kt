@@ -5,6 +5,7 @@ import art.openhe.brains.Notifier
 import art.openhe.model.request.LetterRequest
 import art.openhe.model.response.*
 import art.openhe.dao.LetterDao
+import art.openhe.dao.UserDao
 import art.openhe.dao.criteria.BoolCriteria
 import art.openhe.dao.criteria.BoolCriteria.Companion.eq
 import art.openhe.dao.criteria.BoolCriteria.Companion.isFalse
@@ -26,16 +27,21 @@ import javax.ws.rs.core.Response
 @Singleton
 class LetterRequestHandler
 @Inject constructor(private val letterDao: LetterDao,
+                    private val userDao: UserDao,
                     private val letterSanitizer: LetterSanitizer,
                     private val producer: SqsMessageProducer,
                     private val notifier: Notifier) {
 
 
     fun writeLetter(request: LetterRequest, authorId: String): HandlerResponse {
-        //TODO: Validation
         letterDao.save(letterSanitizer.sanitize(request.applyAsSave(authorId)))?.let {
+            // dispatch the letter to the mailman for delivery
             producer.publish(it, Queues.mailman)
+            // if the parentId is non-null, dispatch to letterPreviewGenerator
+            it.parentId?.let { letter -> producer.publish(letter, Queues.letterPreviewer) }
         }
+        // update the author's lastSentLetterTimestamp
+        userDao.update(authorId, UpdateQuery("lastSentLetterTimestamp" to DateTimeUtils.currentTimeMillis()))
         return EmptyResponse()
     }
 
@@ -44,7 +50,6 @@ class LetterRequestHandler
              ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
 
     fun updateLetter(id: String, request: LetterRequest): HandlerResponse =
-        //TODO: Validation
         letterDao.update(id, request.toUpdateQuery())?.toLetterResponse()
             ?: LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist")
 

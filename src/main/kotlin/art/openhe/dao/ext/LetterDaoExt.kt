@@ -67,6 +67,17 @@ fun LetterDao.find(
     }
 }
 
+fun LetterDao.count(
+    authorId: StringCriteria? = null,
+    recipientId: StringCriteria? = null
+): Long {
+
+    val query = andQuery(authorId = authorId, recipientId = recipientId)
+
+    return collection.runQuery { it.count(query) } ?: 0
+}
+
+
 
 private fun andQuery(
     id: IdCriteria? = null,

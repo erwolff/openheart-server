@@ -1,20 +1,24 @@
 package art.openhe.brains
 
+import art.openhe.config.EnvConfig
 import art.openhe.util.logger
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
 import org.apache.commons.lang3.StringUtils
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Notifier {
+class Notifier
+@Inject constructor(private val envConfig: EnvConfig) {
 
     private val titleTxt = "Dear {}"
     private val receivedLetterTxt = "A letter has found its way to you!"
     private val receivedReplyTxt = "You've received a reply to your letter!"
     private val receivedHeartTxt = "{} has sent you a heart!"
     private val receivedHeartNoSenderTxt = "Your reply has received a heart!"
+    private val letterFromDev = "You've received a letter from the developer!"
 
     private val log = logger()
 
@@ -43,6 +47,15 @@ class Notifier {
             .build()
 
         send(notification, letterId, recipientId)
+    }
+
+    fun welcomeLetter(recipientId: String, recipientAvatar: String) {
+        val notification = Notification.builder()
+            .setTitle(StringUtils.replace(titleTxt, "{}", recipientAvatar))
+            .setBody(letterFromDev)
+            .build()
+
+        send(notification, envConfig.welcomeLetterId(), recipientId)
     }
 
     private fun send(notification: Notification, letterId: String, recipientId: String) {

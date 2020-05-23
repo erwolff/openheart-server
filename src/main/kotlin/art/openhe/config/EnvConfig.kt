@@ -25,6 +25,9 @@ constructor(private val props: Map<String, String> = System.getenv()) {
     fun firebaseDbUrl(): String =
         getValue("FIREBASE_DB_URL") ?: ""
 
+    fun welcomeLetterId(): String =
+        getValue("WELCOME_LETTER_ID") ?: ""
+
     private fun getValue(key: String): String? = props[key]
 
 }

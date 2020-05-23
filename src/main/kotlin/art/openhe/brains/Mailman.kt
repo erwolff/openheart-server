@@ -70,7 +70,7 @@ class Mailman
 
         if (isFirstLetterByAuthor(letter.authorId)) {
             log.info("Letter ${letter.id} is first letter written by author ${letter.authorId}")
-            //TODO: send auto-response
+            //notifier.welcomeLetter(recipientId, recipientAvatar)
         }
     }
 

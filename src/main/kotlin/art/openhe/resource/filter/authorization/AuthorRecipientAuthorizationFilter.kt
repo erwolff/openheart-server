@@ -1,5 +1,6 @@
 package art.openhe.resource.filter.authorization
 
+import art.openhe.config.EnvConfig
 import art.openhe.dao.LetterDao
 import art.openhe.model.Letter
 import art.openhe.model.response.LetterErrorResponse
@@ -31,6 +32,11 @@ class AuthorRecipientAuthorizationFilter : ContainerRequestFilter {
         if (letterIds == null || letterIds.size != 1) {
             requestContext.abortWith(LetterErrorResponse(Response.Status.BAD_REQUEST,
                     "Only one letter id may be supplied in the URL path").toResponse())
+            return
+        }
+
+        if (letterIds[0] == Novocaine.get(EnvConfig::class.java).welcomeLetterId()) {
+            // all users have access to the welcome letter
             return
         }
 

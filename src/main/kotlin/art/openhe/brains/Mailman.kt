@@ -1,5 +1,6 @@
 package art.openhe.brains
 
+import art.openhe.config.EnvConfig
 import art.openhe.dao.LetterDao
 import art.openhe.dao.UserDao
 import art.openhe.dao.criteria.StringCriteria.Companion.eq
@@ -7,10 +8,8 @@ import art.openhe.dao.ext.count
 import art.openhe.model.Letter
 import art.openhe.util.UpdateQuery
 import art.openhe.util.logger
-import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.Message
-import com.google.firebase.messaging.Notification
 import org.apache.commons.lang3.StringUtils
+import org.bson.types.ObjectId
 import org.joda.time.DateTimeUtils
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,7 +27,8 @@ class Mailman
 @Inject constructor(private val letterDao: LetterDao,
                     private val userDao: UserDao,
                     private val recipientFinder: RecipientFinder,
-                    private val notifier: Notifier) {
+                    private val notifier: Notifier,
+                    private val envConfig: EnvConfig) {
 
     private val log = logger()
 
@@ -70,7 +70,15 @@ class Mailman
 
         if (isFirstLetterByAuthor(letter.authorId)) {
             log.info("Letter ${letter.id} is first letter written by author ${letter.authorId}")
-            //notifier.welcomeLetter(recipientId, recipientAvatar)
+
+            // generate a welcome letter to this user
+            generateAndStoreWelcomeLetterForUser(letter.authorId, letter.authorAvatar)?.let {
+                // send the welcome letter to this user
+                notifier.welcomeLetter(letter.authorId, letter.authorAvatar, it)
+
+                // update this user's lastReceivedLetterTimestamp (because they're receiving the welcome letter)
+                updateRecipient(letter.authorId)
+            }
         }
     }
 
@@ -98,4 +106,17 @@ class Mailman
 
     private fun isFirstLetterByAuthor(authorId: String) =
         letterDao.count(authorId = eq(authorId)) <= 1
+
+    private fun generateAndStoreWelcomeLetterForUser(id: String, avatar: String): String? {
+        val welcomeLetterTemplate = letterDao.findById(envConfig.welcomeLetterId()) ?: return null
+        return letterDao.save(Letter(
+            authorId = welcomeLetterTemplate.authorId,
+            authorAvatar = welcomeLetterTemplate.authorAvatar,
+            recipientId = id,
+            recipientAvatar = avatar,
+            body = welcomeLetterTemplate.body,
+            writtenTimestamp = DateTimeUtils.currentTimeMillis(),
+            sentTimestamp = DateTimeUtils.currentTimeMillis()
+        ))?.id
+    }
 }

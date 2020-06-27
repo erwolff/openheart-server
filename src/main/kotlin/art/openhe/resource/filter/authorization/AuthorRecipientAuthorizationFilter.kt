@@ -35,11 +35,6 @@ class AuthorRecipientAuthorizationFilter : ContainerRequestFilter {
             return
         }
 
-        if (letterIds[0] == Novocaine.get(EnvConfig::class.java).welcomeLetterId()) {
-            // all users have access to the welcome letter
-            return
-        }
-
         val letter = Novocaine.get(LetterDao::class.java).findById(letterIds[0])
 
         if (!isAuthorOrRecipient(userId, letter) || !isViewable(userId, letter!!)) {

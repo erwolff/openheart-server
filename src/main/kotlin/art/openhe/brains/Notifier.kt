@@ -49,13 +49,13 @@ class Notifier
         send(notification, letterId, recipientId)
     }
 
-    fun welcomeLetter(recipientId: String, recipientAvatar: String) {
+    fun welcomeLetter(recipientId: String, recipientAvatar: String, welcomeLetterId: String) {
         val notification = Notification.builder()
             .setTitle(StringUtils.replace(titleTxt, "{}", recipientAvatar))
             .setBody(letterFromDev)
             .build()
 
-        send(notification, envConfig.welcomeLetterId(), recipientId)
+        send(notification, welcomeLetterId, recipientId)
     }
 
     private fun send(notification: Notification, letterId: String, recipientId: String) {

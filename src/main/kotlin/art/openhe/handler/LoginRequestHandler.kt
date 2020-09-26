@@ -2,7 +2,6 @@ package art.openhe.handler
 
 import art.openhe.cache.Cache
 import art.openhe.dao.UserDao
-import art.openhe.dao.criteria.StringCriteria
 import art.openhe.dao.criteria.StringCriteria.Companion.eq
 import art.openhe.dao.ext.findOne
 import art.openhe.model.User

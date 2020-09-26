@@ -25,6 +25,9 @@ ext.jackson_kotlin_version = '2.10.+'
 ext.joda_version = '2.10.5'
 ext.aws_sqs_version = '1.0.8'
 ext.firebase_admin_version = '6.12.2'
+ext.jedis_version = '3.2.0'
+ext.retryer_version = '2.0.0'
+ext.collections_version = '4.4'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
@@ -36,8 +39,10 @@ dependencies {
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: "$jackson_kotlin_version"
     compile group: 'joda-time', name: 'joda-time', version: "$joda_version"
     compile group: 'com.amazonaws', name: 'amazon-sqs-java-messaging-lib', version: "$aws_sqs_version"
-    compile group: 'redis.clients', name: 'jedis', version: '3.2.0'
-    compile group: 'com.github.rholder', name: 'guava-retrying', version: '2.0.0'
+    compile group: 'redis.clients', name: 'jedis', version: "$jedis_version"
+    compile group: 'com.github.rholder', name: 'guava-retrying', version: "$retryer_version"
+    compile group: 'org.apache.commons', name: 'commons-collections4', version: "$collections_version"
+
 }
 
 apply plugin: 'application'

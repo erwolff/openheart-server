@@ -9,10 +9,10 @@ sealed class ValueCriteria<T: Any> {
     companion object {
         fun <T: Any> eq(value: T): ValueCriteria<T> = Eq(value)
         fun <T: Any> ne(value: T): ValueCriteria<T> = Ne(value)
-        fun <T: Any> isIn(vararg values: T): ValueCriteria<T> = IsIn(setOf(*values))
-        fun <T: Any> isIn(values: Collection<T>): ValueCriteria<T> = IsIn(values)
-        fun <T: Any> isNotIn(vararg values: T): ValueCriteria<T> = IsNotIn(setOf(*values))
-        fun <T: Any> isNotIn(values: Collection<T>): ValueCriteria<T> = IsNotIn(values)
+        fun <T: Any> isIn(vararg values: T): ValueCriteria<T> = if (values.size == 1) Eq(values.first()) else IsIn(setOf(*values))
+        fun <T: Any> isIn(values: Collection<T>): ValueCriteria<T> = if (values.size == 1) Eq(values.first()) else IsIn(values)
+        fun <T: Any> isNotIn(vararg values: T): ValueCriteria<T> = if (values.size == 1) Ne(values.first()) else IsNotIn(setOf(*values))
+        fun <T: Any> isNotIn(values: Collection<T>): ValueCriteria<T> = if (values.size == 1) Ne(values.first()) else IsNotIn(values)
         fun <T: Number> lt(value: T): ValueCriteria<T> = Lt(value)
         fun <T: Number> lte(value: T): ValueCriteria<T> = Lte(value)
         fun <T: Number> gt(value: T): ValueCriteria<T> = Gt(value)
@@ -54,15 +54,13 @@ sealed class ValueCriteria<T: Any> {
                 else -> throw UnsupportedOperationException("Unsupported Ne call with type: ${this::class.java.simpleName}")
             }
         is IsIn ->
-            if (this.values.size == 1) eq(this.values.first()).toCriteria(field)
-            else when(this.values.first()) {
+            when(this.values.first()) {
                 is String -> "{ $field: { \$in: [\"${this.values.joinToString("\",\"")}\"] } }"
                 is Number -> "{ $field: { \$in: [${this.values.joinToString(",")}] } }"
                 else -> throw UnsupportedOperationException("Unsupported IsIn call with type: ${this::class.java.simpleName}")
             }
         is IsNotIn ->
-            if (this.values.size == 1) ne(this.values.first()).toCriteria(field)
-            else when(this.values.first()) {
+            when(this.values.first()) {
                 is String -> "{ $field: { \$nin: [\"${this.values.joinToString("\",\"")}\"] } }"
                 is Number -> "{ $field: { \$nin: [${this.values.joinToString(",")}] } }"
                 else -> throw UnsupportedOperationException("Unsupported IsNotIn call with type: ${this::class.java.simpleName}")

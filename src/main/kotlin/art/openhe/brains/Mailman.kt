@@ -6,6 +6,7 @@ import art.openhe.dao.UserDao
 import art.openhe.dao.criteria.StringCriteria.Companion.eq
 import art.openhe.dao.ext.count
 import art.openhe.model.Letter
+import art.openhe.model.ext.isReply
 import art.openhe.util.UpdateQuery
 import art.openhe.util.logger
 import com.google.common.annotations.VisibleForTesting
@@ -33,52 +34,12 @@ class Mailman
     private val log = logger()
 
     fun mail(letter: Letter) {
-        val isReply = StringUtils.isNotBlank(letter.parentId)
-        val recipient =
-            if (isReply) letter.recipientId to letter.recipientAvatar
-            else findRecipient(letter)
-
-        val recipientId = recipient?.first
-        val recipientAvatar = recipient?.second
-
-        if (recipient == null || recipientId == null || recipientAvatar == null) {
-            log.error("Unable to find recipient for letter from author ${letter.authorId}")
-            return
-        }
-
-        if (isReply) {
-            // this is a reply, we need to update the original letter
-            updateOriginalLetter(letter.parentId!!, letter.id)
-        }
-
-        log.info("Sending letter from author ${letter.authorId} to recipient $recipientId")
-
-        // update the recipient's lastReceivedLetterTimestamp - but only if this is not a reply
-        if (!isReply) {
-            updateRecipient(recipientId)
-        }
-
-        // update the letter with the sentTimestamp and recipient
-        updateLetter(letter, recipientId, recipientAvatar)
-
-        if (isReply) {
-            notifier.receivedReply(letter.id, recipientId, recipientAvatar)
-        }
-        else {
-            notifier.receivedLetter(letter.id, recipientId, recipientAvatar)
-        }
+        if (letter.isReply()) processReply(letter)
+        else processNewLetter(letter)
 
         if (isFirstLetterByAuthor(letter.authorId)) {
-            log.info("Letter ${letter.id} is first letter written by author ${letter.authorId}")
-
-            // generate a welcome letter to this user
-            generateAndStoreWelcomeLetterForUser(letter.authorId, letter.authorAvatar)?.let {
-                // send the welcome letter to this user
-                notifier.welcomeLetter(letter.authorId, letter.authorAvatar, it)
-
-                // update this user's lastReceivedLetterTimestamp (because they're receiving the welcome letter)
-                updateRecipient(letter.authorId)
-            }
+            log.info("Letter ${letter.id} is first letter written by author ${letter.authorId} - sending welcome letter")
+            sendWelcomeLetter(letter.authorId, letter.authorAvatar)
         }
     }
 
@@ -91,24 +52,84 @@ class Mailman
         }
     }
 
-    private fun updateOriginalLetter(originalLetterId: String, childId: String) =
+    @VisibleForTesting
+    fun processReply(letter: Letter) {
+        if (letter.recipientId == null || letter.recipientAvatar == null) {
+            log.error("No recipientId or recipientAvatar on reply letter with parentId: ${letter.parentId} from author: ${letter.authorId}")
+            return
+        }
+
+        // set the childId on the original letter
+        updateOriginalLetter(letter.parentId!!, letter.id)
+
+        log.info("Sending reply letter from author ${letter.authorId} to recipient ${letter.recipientId}")
+
+        // update the reply letter with the sentTimestamp and recipient
+        updateLetter(letter, letter.recipientId, letter.recipientAvatar)
+
+        // notify the recipient of the reply
+        notifier.receivedReply(letter.id, letter.recipientId, letter.recipientAvatar)
+    }
+
+    @VisibleForTesting
+    fun processNewLetter(letter: Letter) {
+        val recipient = findRecipient(letter)
+
+        val recipientId = recipient?.first
+        val recipientAvatar = recipient?.second
+
+        if (recipient == null || recipientId == null || recipientAvatar == null) {
+            log.error("Unable to find recipient for letter from author ${letter.authorId}")
+            return
+        }
+
+        log.info("Sending new letter from author ${letter.authorId} to recipient $recipientId")
+
+        // update the recipient's lastReceivedLetterTimestamp - but only if this is not a reply
+        updateRecipient(recipientId)
+
+        // update the letter with the sentTimestamp and recipient
+        updateLetter(letter, recipientId, recipientAvatar)
+
+        // notify the recipient of the letter
+        notifier.receivedLetter(letter.id, recipientId, recipientAvatar)
+    }
+
+    @VisibleForTesting
+    fun updateOriginalLetter(originalLetterId: String, childId: String) =
         letterDao.update(originalLetterId, UpdateQuery(
             "childId" to childId))
 
-    private fun updateRecipient(recipientId: String) =
+    @VisibleForTesting
+    fun updateRecipient(recipientId: String) =
         // update recipient's lastReceivedLetterTimestamp
         userDao.update(recipientId, UpdateQuery("lastReceivedLetterTimestamp" to DateTimeUtils.currentTimeMillis()))
 
-    private fun updateLetter(letter: Letter, recipientId: String, recipientAvatar: String) =
+    @VisibleForTesting
+    fun updateLetter(letter: Letter, recipientId: String, recipientAvatar: String) =
         letterDao.update(letter.id, UpdateQuery(
             "sentTimestamp" to DateTimeUtils.currentTimeMillis(),
             "recipientId" to recipientId,
             "recipientAvatar" to recipientAvatar))
 
-    private fun isFirstLetterByAuthor(authorId: String) =
+    @VisibleForTesting
+    fun isFirstLetterByAuthor(authorId: String) =
         letterDao.count(authorId = eq(authorId)) <= 1
 
-    private fun generateAndStoreWelcomeLetterForUser(id: String, avatar: String): String? {
+    @VisibleForTesting
+    fun sendWelcomeLetter(id: String, avatar: String) {
+        // generate a welcome letter to this user
+        generateAndStoreWelcomeLetterForUser(id, avatar)?.let {
+            // send the welcome letter to this user
+            notifier.welcomeLetter(id, avatar, it)
+
+            // update this user's lastReceivedLetterTimestamp (because they're receiving the welcome letter)
+            updateRecipient(id)
+        }
+    }
+
+    @VisibleForTesting
+    fun generateAndStoreWelcomeLetterForUser(id: String, avatar: String): String? {
         val welcomeLetterTemplate = letterDao.findById(envConfig.welcomeLetterId()) ?: return null
         return letterDao.save(Letter(
             authorId = welcomeLetterTemplate.authorId,

@@ -8,8 +8,8 @@ import art.openhe.dao.ext.count
 import art.openhe.model.Letter
 import art.openhe.util.UpdateQuery
 import art.openhe.util.logger
+import com.google.common.annotations.VisibleForTesting
 import org.apache.commons.lang3.StringUtils
-import org.bson.types.ObjectId
 import org.joda.time.DateTimeUtils
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,7 +35,7 @@ class Mailman
     fun mail(letter: Letter) {
         val isReply = StringUtils.isNotBlank(letter.parentId)
         val recipient =
-            if(isReply) letter.recipientId to letter.recipientAvatar
+            if (isReply) letter.recipientId to letter.recipientAvatar
             else findRecipient(letter)
 
         val recipientId = recipient?.first
@@ -82,10 +82,11 @@ class Mailman
         }
     }
 
-    private fun findRecipient(letter: Letter): Pair<String, String>? {
+    @VisibleForTesting
+    fun findRecipient(letter: Letter): Pair<String, String>? {
         log.info("Finding recipient for letter from author ${letter.authorId}")
 
-        return  recipientFinder.find(letter)?.let {
+        return recipientFinder.find(letter)?.let {
             it.id to it.avatar
         }
     }

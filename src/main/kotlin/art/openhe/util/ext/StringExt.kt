@@ -10,12 +10,8 @@ fun <T> String?.letIfNotEmpty(lambda: (String) -> T): T? =
     if (this.isNullOrEmpty()) null
     else lambda(this)
 
-fun <T> String?.letAsObjectId(lambda: (ObjectId) -> T): T? =
-    try {
-        if (!ObjectId.isValid(this)) null
-        else lambda(ObjectId(this))
-    } catch (e: IllegalArgumentException) {
-        null
-    }
+fun <T> String?.letAsObjectId(lambda: (ObjectId) -> T): T? = this?.asObjectId()?.let{ lambda(it) }
 
 fun <T> String.mapTo(toClass: Class<T>) = Mapper.fromString(this, toClass)
+
+fun String.asObjectId() = ObjectId(this)

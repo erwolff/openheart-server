@@ -1,8 +1,11 @@
 package art.openhe.util
 
 
-class UpdateQuery
-constructor(private vararg val fieldAndValues: Pair<String, Any>?) {
+class DbUpdate
+constructor(
+    val id: String,
+    private vararg val fieldAndValues: Pair<String, Any>?
+) {
 
     private val updatePrefix = "{ \$set: { "
     private val updatePostfix = " } }"

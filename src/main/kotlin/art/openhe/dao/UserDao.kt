@@ -1,12 +1,10 @@
 package art.openhe.dao
 
 import art.openhe.model.User
-import art.openhe.util.UpdateQuery
+import art.openhe.util.DbUpdate
 import art.openhe.util.ext.letAsObjectId
-import art.openhe.util.ext.letIfNotEmpty
 import art.openhe.util.ext.positiveCountOrNull
 import art.openhe.util.ext.runQuery
-import org.jongo.Jongo
 import org.jongo.MongoCollection
 import org.jongo.Oid
 import javax.inject.Inject
@@ -15,7 +13,9 @@ import javax.inject.Singleton
 
 @Singleton
 class UserDao
-@Inject constructor(@Named("users") internal val collection: MongoCollection) {
+@Inject constructor(
+    @Named("users") collection: MongoCollection
+) : Dao(collection) {
 
 
     fun save(user: User): User? =
@@ -24,9 +24,12 @@ class UserDao
         }
 
 
-    fun update(id: String, updateQuery: UpdateQuery): User? =
-        id.letAsObjectId {
-            collection.runQuery { it.findAndModify(Oid.withOid(id)).with(updateQuery.toQuery()).returnNew().`as`(User::class.java) }
+    fun update(dbUpdate: DbUpdate): User? =
+        dbUpdate.id.letAsObjectId { id ->
+            collection.runQuery {
+                it.findAndModify(Oid.withOid(id.toHexString()))
+                    .with(dbUpdate.toQuery())
+                    .returnNew().`as`(User::class.java) }
         }
 
 

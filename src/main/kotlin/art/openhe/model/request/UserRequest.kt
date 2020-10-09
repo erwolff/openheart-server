@@ -1,6 +1,6 @@
 package art.openhe.model.request
 
-import art.openhe.util.UpdateQuery
+import art.openhe.util.DbUpdate
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 
@@ -12,7 +12,10 @@ data class UserRequest (
 
 ) {
 
-    fun toUpdateQuery() =
-        UpdateQuery(avatar?.let { "avatar" to it } )
+    fun toUpdateQuery(userId: String) =
+        DbUpdate(
+            userId,
+            avatar?.let { "avatar" to it }
+        )
 
 }

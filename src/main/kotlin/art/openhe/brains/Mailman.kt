@@ -3,14 +3,14 @@ package art.openhe.brains
 import art.openhe.config.EnvConfig
 import art.openhe.dao.LetterDao
 import art.openhe.dao.UserDao
-import art.openhe.dao.criteria.StringCriteria.Companion.eq
+import art.openhe.dao.criteria.ValueCriteria.Companion.eq
 import art.openhe.dao.ext.count
 import art.openhe.model.Letter
 import art.openhe.model.ext.isReply
-import art.openhe.util.UpdateQuery
+import art.openhe.model.ext.updateWith
+import art.openhe.util.DbUpdate
 import art.openhe.util.logger
 import com.google.common.annotations.VisibleForTesting
-import org.apache.commons.lang3.StringUtils
 import org.joda.time.DateTimeUtils
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -97,17 +97,16 @@ class Mailman
 
     @VisibleForTesting
     fun updateOriginalLetter(originalLetterId: String, childId: String) =
-        letterDao.update(originalLetterId, UpdateQuery(
-            "childId" to childId))
+        letterDao.update(DbUpdate(originalLetterId, "childId" to childId))
 
     @VisibleForTesting
     fun updateRecipient(recipientId: String) =
         // update recipient's lastReceivedLetterTimestamp
-        userDao.update(recipientId, UpdateQuery("lastReceivedLetterTimestamp" to DateTimeUtils.currentTimeMillis()))
+        userDao.update(DbUpdate(recipientId, "lastReceivedLetterTimestamp" to DateTimeUtils.currentTimeMillis()))
 
     @VisibleForTesting
     fun updateLetter(letter: Letter, recipientId: String, recipientAvatar: String) =
-        letterDao.update(letter.id, UpdateQuery(
+        letterDao.update(letter.updateWith(
             "sentTimestamp" to DateTimeUtils.currentTimeMillis(),
             "recipientId" to recipientId,
             "recipientAvatar" to recipientAvatar))

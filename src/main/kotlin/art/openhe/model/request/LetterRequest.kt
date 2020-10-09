@@ -2,7 +2,7 @@ package art.openhe.model.request
 
 import art.openhe.model.Letter
 import art.openhe.model.LetterCategory
-import art.openhe.util.UpdateQuery
+import art.openhe.util.DbUpdate
 import org.joda.time.DateTimeUtils
 
 
@@ -34,8 +34,9 @@ data class LetterRequest(
             readTimestamp = readTimestamp ?:  0)
 
     // currently only updating the readTimestamp is allowed
-    fun toUpdateQuery() =
-        UpdateQuery(
+    fun toUpdateQuery(letterId: String) =
+        DbUpdate(
+            letterId,
             readTimestamp?.let { "readTimestamp" to it }
         )
 }

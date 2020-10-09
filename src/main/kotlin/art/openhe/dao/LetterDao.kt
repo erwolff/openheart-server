@@ -1,7 +1,8 @@
 package art.openhe.dao
 
 import art.openhe.model.Letter
-import art.openhe.util.UpdateQuery
+import art.openhe.model.User
+import art.openhe.util.DbUpdate
 import art.openhe.util.ext.letAsObjectId
 import art.openhe.util.ext.positiveCountOrNull
 import art.openhe.util.ext.runQuery
@@ -13,7 +14,9 @@ import javax.inject.Singleton
 
 @Singleton
 class LetterDao
-@Inject constructor(@Named("letters") internal val collection: MongoCollection) {
+@Inject constructor(
+    @Named("letters") collection: MongoCollection
+) : Dao(collection) {
 
 
     fun save(letter: Letter): Letter? =
@@ -22,9 +25,12 @@ class LetterDao
         }
 
 
-    fun update(id: String, updateQuery: UpdateQuery): Letter? =
-        id.letAsObjectId {
-            collection.runQuery { it.findAndModify(Oid.withOid(id)).with(updateQuery.toQuery()).returnNew().`as`(Letter::class.java) }
+    fun update(dbUpdate: DbUpdate): Letter? =
+        dbUpdate.id.letAsObjectId { id ->
+            collection.runQuery {
+                it.findAndModify(Oid.withOid(id.toHexString()))
+                    .with(dbUpdate.toQuery())
+                    .returnNew().`as`(Letter::class.java) }
         }
 
 

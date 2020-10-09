@@ -9,6 +9,7 @@ import art.openhe.util.logger
 import io.mockk.MockKAnnotations
 import io.mockk.clearAllMocks
 import io.mockk.mockk
+import io.novocaine.Novocaine
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 
@@ -26,11 +27,13 @@ internal open class BaseTest {
     @BeforeAll
     fun beforeAll() {
         MockKAnnotations.init(this)
+        Novocaine.inject(this)
     }
 
     @BeforeEach
     fun beforeEach() {
         clearAllMocks()
+        // TODO: clear db
     }
 
     protected inner class Given(msg: String, function: () -> Unit) {

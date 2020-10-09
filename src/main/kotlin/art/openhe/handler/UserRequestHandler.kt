@@ -13,7 +13,7 @@ class UserRequestHandler
 
     fun updateUser(id: String, request: UserRequest): HandlerResponse =
         //TODO: Validation
-        userDao.update(id, request.toUpdateQuery())?.toUserResponse()
+        userDao.update(request.toUpdateQuery(id))?.toUserResponse()
             ?: UserErrorResponse(Response.Status.NOT_FOUND, id = "A user with id $id does not exist")
 
 

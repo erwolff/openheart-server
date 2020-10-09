@@ -1,10 +1,11 @@
 package art.openhe.model.response
 
+import art.openhe.model.DbObject
 import art.openhe.model.Page
 import javax.ws.rs.core.Response
 
 
-data class PageResponse<T> (
+data class PageResponse<T: EntityResponse> (
 
     val content: List<T>,
     val page: Int,
@@ -12,15 +13,13 @@ data class PageResponse<T> (
     val total: Long,
     val totalPages: Int
 
-) : HandlerResponse() {
+) {
 
-    override
     fun toResponse(): Response = Response.ok().entity(this).build()
-
 }
 
-fun <T> Page<T>.toPageResponse() =
-    PageResponse(content,
+fun <DB_OBJECT: DbObject, ENTITY_RESPONSE: EntityResponse> Page<DB_OBJECT>.asPageResponse(mappingFunction: (DB_OBJECT) -> ENTITY_RESPONSE) =
+    PageResponse(content.map { mappingFunction(it) },
         page,
         size,
         total,

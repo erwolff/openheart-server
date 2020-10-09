@@ -7,4 +7,4 @@ data class LoginResponse (
     val token: SessionTokenResponse? = null,
     val firstLogin: Boolean? = false
 
-) : EntityResponse()
+) : EntityResponse

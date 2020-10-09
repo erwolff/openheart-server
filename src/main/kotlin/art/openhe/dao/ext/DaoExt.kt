@@ -3,6 +3,7 @@ package art.openhe.dao.ext
 import art.openhe.dao.Dao
 import art.openhe.dao.criteria.Sort
 import art.openhe.dao.criteria.ValueCriteria
+import art.openhe.model.DbObject
 import art.openhe.model.Page
 import art.openhe.util.ext.runQuery
 import kotlin.math.ceil
@@ -21,7 +22,7 @@ fun <T> Dao.findOne(query: String, sort: Sort?, clazz: Class<T>): T? =
         collection.runQuery { it.findOne(query).`as`(clazz) }
 
 
-fun <T> Dao.find(query: String, page: Int, size: Int, sort: Sort, clazz: Class<T>): Page<T> {
+fun <T: DbObject> Dao.find(query: String, page: Int, size: Int, sort: Sort, clazz: Class<T>): Page<T> {
     val totalResults = count(query)
 
     val results = collection.runQuery {
@@ -49,4 +50,4 @@ private fun List<String>.toAndQueryString() = when {
     else -> "{ \$and: [ " + this.joinToString { it } + " ] }"
 }
 
- fun <T> noResults(): Page<T> = Page(listOf(), 0, 0, 0, 0)
+ fun <T: DbObject> noResults(): Page<T> = Page(listOf(), 0, 0, 0, 0)

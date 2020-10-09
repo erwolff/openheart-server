@@ -11,4 +11,4 @@ data class UserErrorResponse (
     val email: String? = null,
     val avatar: String? = null
 
-) : ErrorResponse()
+) : ErrorResponse

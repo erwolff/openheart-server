@@ -4,9 +4,9 @@ import art.openhe.model.DbObject
 import javax.ws.rs.core.Response
 
 
-class EmptyResponse : HandlerResponse() {
+class EmptyResponse : EntityResponse {
 
     override fun toResponse(): Response = Response.noContent().build()
 }
 
-fun DbObject.toEmptyResponse(): HandlerResponse = EmptyResponse()
+fun DbObject.toEmptyResponse() = EmptyResponse()

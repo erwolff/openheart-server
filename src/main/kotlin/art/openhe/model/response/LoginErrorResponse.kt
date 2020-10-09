@@ -9,4 +9,4 @@ data class LoginErrorResponse (
     override val message: String? = null,
     val googleIdToken: String? = null
 
-) : ErrorResponse()
+) : ErrorResponse

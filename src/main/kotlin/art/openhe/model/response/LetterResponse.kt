@@ -22,9 +22,9 @@ data class LetterResponse (
     val readTimestamp: Long? = 0,
     val hearted: Boolean? = null
 
-) : EntityResponse()
+) : EntityResponse
 
-fun Letter.toLetterResponse() =
+fun Letter.asLetterResponse() =
     LetterResponse(id,
         authorId,
         authorAvatar,

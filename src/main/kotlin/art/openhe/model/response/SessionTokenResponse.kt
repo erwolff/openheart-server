@@ -13,4 +13,4 @@ data class SessionTokenResponse (
     val expirationTimestamp: Long =
         DateTimeUtils.currentTimeMillis() + TimeUnit.SECONDS.toMillis(Cache.sessionTokenExpSeconds.toLong())
 
-) : EntityResponse()
+) : EntityResponse

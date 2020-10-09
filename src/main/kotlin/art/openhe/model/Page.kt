@@ -1,7 +1,7 @@
 package art.openhe.model
 
 
-data class Page<T> (
+data class Page<T: DbObject> (
 
     val content: List<T>,
     val page: Int,

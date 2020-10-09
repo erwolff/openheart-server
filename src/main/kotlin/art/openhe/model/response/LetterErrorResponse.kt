@@ -19,4 +19,4 @@ data class LetterErrorResponse (
     val writtenTimestamp: String? = null,
     val readTimestamp: String? = null
 
-) : ErrorResponse()
+) : ErrorResponse

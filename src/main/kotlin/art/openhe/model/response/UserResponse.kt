@@ -11,9 +11,9 @@ data class UserResponse (
     val lastReceivedLetterTimestamp: Long = 0,
     val hearts: Long = 0
 
-) : EntityResponse()
+) : EntityResponse
 
-fun User.toUserResponse() =
+fun User.asUserResponse() =
     UserResponse(id,
         avatar,
         lastSentLetterTimestamp,

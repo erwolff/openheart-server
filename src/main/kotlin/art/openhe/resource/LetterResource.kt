@@ -18,7 +18,9 @@ import javax.ws.rs.core.SecurityContext
 @Produces(MediaType.APPLICATION_JSON)
 @Singleton
 class LetterResource
-@Inject constructor(private val handler: LetterRequestHandler): Resource {
+@Inject constructor(
+    private val handler: LetterRequestHandler
+): Resource {
 
     @POST
     fun writeLetter(request: LetterRequest,

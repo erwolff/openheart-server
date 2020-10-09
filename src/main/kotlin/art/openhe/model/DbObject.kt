@@ -3,7 +3,7 @@ package art.openhe.model
 import org.joda.time.DateTimeUtils
 
 
-abstract class DbObject() {
+abstract class DbObject {
 
     abstract val id: String
 

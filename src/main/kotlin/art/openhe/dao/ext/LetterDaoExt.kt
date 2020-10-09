@@ -38,7 +38,7 @@ fun LetterDao.find(
     childId: ValueCriteria<String>? = null,
     hearted: ValueCriteria<Boolean>? = null,
     deleted: ValueCriteria<Boolean>? = null
-): Page<Letter>? =
+): Page<Letter> =
     find(
         andQuery(id, authorId, recipientId, parentId, childId, hearted, deleted),
         page, size, sort,

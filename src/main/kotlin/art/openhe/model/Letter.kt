@@ -66,6 +66,5 @@ data class Letter (
             flagged ?: this.flagged,
             deleted ?: this.deleted
         )
-
 }
 

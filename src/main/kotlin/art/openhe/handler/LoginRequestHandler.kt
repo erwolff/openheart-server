@@ -18,7 +18,7 @@ class LoginRequestHandler
 @Inject constructor(private val userDao: UserDao,
                     private val cache: Cache) {
 
-    fun login(googleId: String, email: String): HandlerResponse {
+    fun login(googleId: String, email: String): HandlerResult<LoginResponse, LoginErrorResponse> {
         var firstLogin = false
 
         // if googleId matches a user in our system, return the user
@@ -36,17 +36,17 @@ class LoginRequestHandler
                     avatar = RandomUtil.randomAvatar().name))
 
             if (user == null)
-                return UserErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, message = "Unable to create new user")
+                return LoginErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, message = "Unable to create new user").asFailure()
         }
 
         val token = generateSessionToken(user.id)
-        return LoginResponse(user.toUserResponse(), token, firstLogin)
+        return LoginResponse(user.asUserResponse(), token, firstLogin).asSuccess()
     }
 
-    fun refresh(userId: String): HandlerResponse =
+    fun refresh(userId: String): HandlerResult<SessionTokenResponse, SessionTokenErrorResponse> =
         userDao.findById(userId)?.let {
-            generateSessionToken(it.id)
-        } ?: UserErrorResponse(Response.Status.UNAUTHORIZED)
+            generateSessionToken(it.id).asSuccess()
+        } ?: SessionTokenErrorResponse(Response.Status.UNAUTHORIZED).asFailure()
 
 
 

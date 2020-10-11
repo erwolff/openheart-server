@@ -23,14 +23,18 @@ class LetterResource
 ): Resource {
 
     @POST
-    fun writeLetter(request: LetterRequest,
-                    @Context securityContext: SecurityContext): Response =
-        handler.writeLetter(request, securityContext.userPrincipal.name).toResponse()
+    fun writeLetter(
+        request: LetterRequest,
+        @Context context: SecurityContext
+    ): Response =
+        handler.writeLetter(request, context.userPrincipal.name).toResponse()
 
     @GET
     @Path("/{id}")
     @AuthorRecipientAuthorization
-    fun getLetter(@PathParam("id") id: String): Response =
+    fun getLetter(
+        @PathParam("id") id: String
+    ): Response =
         handler.getLetter(id).toResponse()
 
     // TODO: Currently we don't allow blanket updates
@@ -41,19 +45,23 @@ class LetterResource
 
     @GET
     @Path("/sent")
-    fun getSentLetters(@QueryParam("page") page: Int,
-                       @QueryParam("size") size: Int,
-                       @QueryParam("hearted") hearted: Boolean?,
-                       @QueryParam("reply") reply: Boolean?,
-                       @Context securityContext: SecurityContext): Response =
-        handler.getSentLetters(securityContext.userPrincipal.name, page, size).toResponse()
+    fun getSentLetters(
+        @QueryParam("page") page: Int,
+        @QueryParam("size") size: Int,
+        @QueryParam("hearted") hearted: Boolean?,
+        @QueryParam("reply") reply: Boolean?,
+        @Context context: SecurityContext
+    ): Response =
+        handler.getSentLetters(context.userPrincipal.name, page, size).toResponse()
 
     @GET
     @Path("/received")
-    fun getReceivedLetters(@QueryParam("page") page: Int,
-                           @QueryParam("size") size: Int,
-                           @Context securityContext: SecurityContext): Response =
-        handler.getReceivedLetters(securityContext.userPrincipal.name, page, size).toResponse()
+    fun getReceivedLetters(
+        @QueryParam("page") page: Int,
+        @QueryParam("size") size: Int,
+        @Context context: SecurityContext
+    ): Response =
+        handler.getReceivedLetters(context.userPrincipal.name, page, size).toResponse()
 
     /**
      * Sets hearted: true
@@ -62,7 +70,9 @@ class LetterResource
     @PUT
     @Path("/{id}/heart")
     @RecipientAuthorization
-    fun heartLetter(@PathParam("id") id: String): Response =
+    fun heartLetter(
+        @PathParam("id") id: String
+    ): Response =
         handler.heartLetter(id).toResponse()
 
     /**
@@ -72,7 +82,9 @@ class LetterResource
     @PUT
     @Path("/{id}/report")
     @RecipientAuthorization
-    fun reportLetter(@PathParam("id") id: String): Response =
+    fun reportLetter(
+        @PathParam("id") id: String
+    ): Response =
         handler.reportLetter(id).toResponse()
 
     /**
@@ -82,7 +94,9 @@ class LetterResource
     @PUT
     @Path("/{id}/read")
     @RecipientAuthorization
-    fun markAsRead(@PathParam("id") id: String): Response =
+    fun markAsRead(
+        @PathParam("id") id: String
+    ): Response =
         handler.markAsRead(id).toResponse()
 
 
@@ -93,6 +107,8 @@ class LetterResource
     @DELETE
     @Path("/{id}")
     @RecipientAuthorization
-    fun deleteLetter(@PathParam("id") id: String): Response =
+    fun deleteLetter(
+        @PathParam("id") id: String
+    ): Response =
         handler.deleteLetter(id).toResponse()
 }

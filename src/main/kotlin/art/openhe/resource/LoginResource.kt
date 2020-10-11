@@ -18,21 +18,27 @@ import javax.ws.rs.core.SecurityContext
 @Produces(MediaType.APPLICATION_JSON)
 @Singleton
 class LoginResource
-@Inject constructor(private val handler: LoginRequestHandler): Resource {
+@Inject constructor(
+    private val handler: LoginRequestHandler
+) : Resource {
 
     @GET
     @Path("/login")
     @FirebaseAuthentication
-    fun login(@Context securityContext: SecurityContext): Response {
-        val principle = securityContext.userPrincipal.name.split("::")
+    fun login(
+        @Context context: SecurityContext
+    ): Response {
+        val principle = context.userPrincipal.name.split("::")
         return handler.login(principle[0], principle[1]).toResponse()
     }
 
     @GET
     @Path("/refresh")
     @RefreshTokenAuthentication
-    fun refresh(@Context securityContext: SecurityContext): Response {
-        return handler.refresh(securityContext.userPrincipal.name).toResponse()
+    fun refresh(
+        @Context context: SecurityContext
+    ): Response {
+        return handler.refresh(context.userPrincipal.name).toResponse()
     }
 
 

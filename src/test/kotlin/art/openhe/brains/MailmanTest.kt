@@ -3,7 +3,7 @@ package art.openhe.brains
 import art.openhe.BaseTest
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
@@ -98,6 +98,42 @@ internal class MailmanTest : BaseTest() {
 
                 Then("Null should be returned") {
                     assertNull(actual)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun test_findRecipient_returnsFoundRecipient() {
+        Given("A letter to find a recipient for") {
+            every { recipientFinder.find(any()) } returns user
+
+            When("RecipientFinder finds a recipient") {
+                val actual = mailman.findRecipient(letter)
+
+                Then("The found user id and avatar should be returned") {
+                    assertNotNull(actual)
+                    assertEquals(actual!!.first, user.id)
+                    assertEquals(actual.second, user.avatar)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun test_processReply_noRecipientId() {
+        Given("A letter to process as reply with no recipientId") {
+            val mailman = spy()
+            every { letter.recipientId } returns null
+            every { mailman.updateOriginalLetter(any(), any()) } returns null
+            every { mailman.updateLetter(any(), any(), any()) } returns null
+            every { notifier.receivedReply(any(), any(), any()) } returns Unit // do nothing
+
+            When("processReply is called with this letter") {
+                mailman.processReply(letter)
+                
+                Then("The letter should not be processed") {
+                    verify(exactly = 0) { mailman.updateOriginalLetter(any(), any()) }
                 }
             }
         }

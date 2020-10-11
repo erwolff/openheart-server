@@ -16,17 +16,25 @@ import javax.ws.rs.core.SecurityContext
 @Produces(MediaType.APPLICATION_JSON)
 @Singleton
 class UserResource
-@Inject constructor(private val handler: UserRequestHandler): Resource {
+@Inject constructor(
+    private val handler: UserRequestHandler
+) : Resource {
 
     @GET
-    fun getUser(@Context securityContext: SecurityContext): Response =
-        handler.getUser(securityContext.userPrincipal.name).toResponse()
+    fun getUser(
+        @Context context: SecurityContext
+    ): Response =
+        handler.getUser(context.userPrincipal.name).toResponse()
 
     @PUT
-    fun updateUser(request: UserRequest, @Context securityContext: SecurityContext): Response =
-        handler.updateUser(securityContext.userPrincipal.name, request).toResponse()
+    fun updateUser(
+        request: UserRequest, @Context context: SecurityContext
+    ): Response =
+        handler.updateUser(context.userPrincipal.name, request).toResponse()
 
     @DELETE
-    fun deleteUser(@Context securityContext: SecurityContext): Response =
-        handler.deleteUser(securityContext.userPrincipal.name).toResponse()
+    fun deleteUser(
+        @Context context: SecurityContext
+    ): Response =
+        handler.deleteUser(context.userPrincipal.name).toResponse()
 }

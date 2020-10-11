@@ -7,6 +7,7 @@ import art.openhe.dao.LetterDao
 import art.openhe.dao.UserDao
 import art.openhe.model.Letter
 import art.openhe.model.LetterCategory
+import art.openhe.model.User
 import art.openhe.util.logInfo
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
@@ -22,12 +23,13 @@ import org.slf4j.LoggerFactory
 
 internal open class BaseTest {
 
-    protected val letterDao: LetterDao = mockk()
-    protected val userDao: UserDao = mockk()
-    protected val recipientFinder: RecipientFinder = mockk()
-    protected val notifier: Notifier = mockk()
-    protected val envConfig: EnvConfig = mockk()
+    protected val letterDao: LetterDao = mockk(relaxed = true, relaxUnitFun = true)
+    protected val userDao: UserDao = mockk(relaxed = true, relaxUnitFun = true)
+    protected val recipientFinder: RecipientFinder = mockk(relaxed = true, relaxUnitFun = true)
+    protected val notifier: Notifier = mockk(relaxed = true, relaxUnitFun = true)
+    protected val envConfig: EnvConfig = mockk(relaxed = true, relaxUnitFun = true)
     protected val letter: Letter = mockk()
+    protected val user: User = mockk()
 
     @BeforeAll
     fun beforeAll() {
@@ -40,6 +42,7 @@ internal open class BaseTest {
     fun beforeEach() {
         clearAllMocks()
         resetLetterMock()
+        resetUserMock()
     }
 
     private fun resetLetterMock() {
@@ -54,6 +57,13 @@ internal open class BaseTest {
         every { letter.childPreview } returns "childPreview"
         every { letter.category } returns LetterCategory.THOUGHT
         every { letter.body } returns "body"
+    }
+
+    private fun resetUserMock() {
+        every { user.id } returns "id"
+        every { user.email } returns "email"
+        every { user.googleId } returns "googleId"
+        every { user.avatar } returns "avatar"
     }
 
     protected inner class Given(msg: String, function: () -> Unit) {

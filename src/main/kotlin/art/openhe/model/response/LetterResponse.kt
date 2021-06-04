@@ -24,7 +24,7 @@ data class LetterResponse (
 
 ) : EntityResponse
 
-fun Letter.asLetterResponse() =
+fun Letter.toLetterResponse() =
     LetterResponse(id,
         authorId,
         authorAvatar,

@@ -1,5 +1,6 @@
 package art.openhe.dao.criteria
 
+import art.openhe.util.ext.toClause
 import org.apache.commons.collections4.CollectionUtils
 import org.bson.types.ObjectId
 
@@ -38,55 +39,23 @@ sealed class ValueCriteria<T: Any> {
     private class IsNull<T: Any>: ValueCriteria<T>()
 
     fun toCriteria(field: String): String = when(this) {
-        is Eq ->
-            when(this.value) {
-                is String -> "{ $field: \"${this.value}\" }"
-                is Number -> "{ $field: ${this.value} }"
-                is Boolean -> "{ $field: ${this.value} }"
-                is ObjectId -> "{ _id: { \$oid: \"${this.value.toHexString()}\" } }"
-                else -> throw UnsupportedOperationException("Unsupported Eq call with type: ${this::class.java.simpleName}")
-            }
-        is Ne ->
-            when(this.value) {
-                is String -> "{ $field: { \$ne: \"${this.value}\" } }"
-                is Number -> "{ $field: { \$ne: ${this.value} } }"
-                is ObjectId -> "{ _id: { \$ne: { \$oid: \"${this.value}\" } } }"
-                else -> throw UnsupportedOperationException("Unsupported Ne call with type: ${this::class.java.simpleName}")
-            }
-        is IsIn ->
-            when(this.values.first()) {
-                is String -> "{ $field: { \$in: [\"${this.values.joinToString("\",\"")}\"] } }"
-                is Number -> "{ $field: { \$in: [${this.values.joinToString(",")}] } }"
-                else -> throw UnsupportedOperationException("Unsupported IsIn call with type: ${this::class.java.simpleName}")
-            }
-        is IsNotIn ->
-            when(this.values.first()) {
-                is String -> "{ $field: { \$nin: [\"${this.values.joinToString("\",\"")}\"] } }"
-                is Number -> "{ $field: { \$nin: [${this.values.joinToString(",")}] } }"
-                else -> throw UnsupportedOperationException("Unsupported IsNotIn call with type: ${this::class.java.simpleName}")
-            }
-        is Lt -> "{ $field: { \$lt: ${this.value} } }"
-        is Lte -> "{ $field: { \$lte: ${this.value} } }"
-        is Gt -> "{ $field: { \$gt: ${this.value} } }"
-        is Gte -> "{ $field: { \$gte: ${this.value} } }"
-        is Between ->
-            "{ \$and: [ $field: { \$gte: ${this.min} } }, { $field: { \$lte: ${this.max} } } ]"
-        is IsNotNull -> "{ $field: { \$ne: null } }"
-        is IsNull -> "{ $field: { \$eq: null } }"
+        is Between -> "{ \$and: [ $field: { \$gt: ${this.min} } }, { $field: { \$lt: ${this.max} } } ]"
+        else -> this.getQueryString(field).replace("#", this.getValues().firstOrNull()?.toClause() ?: "null")
     }
 
-    fun toString(field: String): String = when(this) {
-        is Eq -> " $field eq ${this.value}"
-        is Ne -> " $field ne ${this.value}"
-        is IsIn -> " $field isIn ${this.values.joinToString(",")}"
-        is IsNotIn -> " $field isNotIn ${this.values.joinToString(",")}"
-        is Lt -> " $field lt ${this.value}"
-        is Lte -> " $field lte ${this.value}"
-        is Gt -> " $field gt ${this.value}"
-        is Gte -> " $field gte ${this.value}"
-        is Between -> " $field gte ${this.min} and lte ${this.max}"
-        is IsNotNull -> " $field is not null"
-        is IsNull -> " $field is null"
+    private fun getQueryString(field: String): String =
+        "{ $field: { ${this.getOp()}: # } }"
+
+    private fun getOp(): String = when(this) {
+        is Eq, is IsNull -> "\$eq"
+        is Ne, is IsNotNull -> "\$ne"
+        is IsIn -> "\$in"
+        is IsNotIn -> "\$nin"
+        is Lt -> "\$lt"
+        is Lte -> "\$lte"
+        is Gt -> "\$gt"
+        is Gte -> "\$gte"
+        is Between -> throw UnsupportedOperationException("Unsupported getOp call using Between criteria")
     }
 
     fun getValues(): List<T> = when(this)  {

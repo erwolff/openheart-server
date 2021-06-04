@@ -1,9 +1,8 @@
 package art.openhe.dao
 
 import art.openhe.model.Letter
-import art.openhe.model.User
 import art.openhe.util.DbUpdate
-import art.openhe.util.ext.letAsObjectId
+import art.openhe.util.ext.asObjectId
 import art.openhe.util.ext.positiveCountOrNull
 import art.openhe.util.ext.runQuery
 import org.jongo.MongoCollection
@@ -20,28 +19,28 @@ class LetterDao
 
 
     fun save(letter: Letter): Letter? =
-        letter.id.letAsObjectId {
+        letter.id.asObjectId?.let {
             collection.runQuery { it.save(letter)?.let { findById(letter.id) } }
         }
 
 
     fun update(dbUpdate: DbUpdate): Letter? =
-        dbUpdate.id.letAsObjectId { id ->
+        dbUpdate.id.asObjectId?.let { oid ->
             collection.runQuery {
-                it.findAndModify(Oid.withOid(id.toHexString()))
+                it.findAndModify(Oid.withOid(oid.toHexString()))
                     .with(dbUpdate.toQuery())
                     .returnNew().`as`(Letter::class.java) }
         }
 
 
-    fun delete(id: String): Int? =
-        id.letAsObjectId { oid ->
+    fun delete(id: String): Int =
+        id.asObjectId?.let { oid ->
             collection.runQuery { it.remove(oid)?.positiveCountOrNull() }
-        }
+        } ?: 0
 
 
     fun findById(id: String): Letter? =
-        id.letAsObjectId { oid ->
+        id.asObjectId?.let { oid ->
             collection.runQuery { it.findOne(oid).`as`(Letter::class.java) }
         }
 }

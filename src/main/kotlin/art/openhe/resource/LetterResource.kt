@@ -13,6 +13,9 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
+/**
+ * REST Resource which handles all Letter-related requests
+ */
 @Path("/letters")
 @SessionAuthentication
 @Produces(MediaType.APPLICATION_JSON)
@@ -22,13 +25,10 @@ class LetterResource
     private val handler: LetterRequestHandler
 ): Resource {
 
-    @POST
-    fun writeLetter(
-        request: LetterRequest,
-        @Context context: SecurityContext
-    ): Response =
-        handler.writeLetter(request, context.userPrincipal.name).toResponse()
-
+    /**
+     * Returns a LetterResponse representing the
+     * Letter object with the provided id
+     */
     @GET
     @Path("/{id}")
     @AuthorRecipientAuthorization
@@ -37,12 +37,30 @@ class LetterResource
     ): Response =
         handler.getLetter(id).toResponse()
 
-    // TODO: Currently we don't allow blanket updates
-    /*@PUT
-    @Path("/{id}")
-    fun updateLetter(@PathParam("id") id: String, request: LetterRequest): Response =
-        handler.updateLetter(id, request).toResponse()*/
 
+    /**
+     * Creates a new Letter object based on the
+     * supplied LetterRequest and returns a
+     * LetterResponse representing this newly created
+     * Letter
+     */
+    @POST
+    fun writeLetter(
+        request: LetterRequest,
+        @Context context: SecurityContext
+    ): Response =
+        handler.writeLetter(
+            request = request,
+            authorId = context.userPrincipal.name
+        ).toResponse()
+
+
+    /**
+     * Returns a paginated entity of LetterResponse objects
+     * which the calling entity has authored - filtered by
+     * the supplied params
+     */
+    //TODO: Add sort, refactor into pageable object
     @GET
     @Path("/sent")
     fun getSentLetters(
@@ -52,8 +70,21 @@ class LetterResource
         @QueryParam("reply") reply: Boolean?,
         @Context context: SecurityContext
     ): Response =
-        handler.getSentLetters(context.userPrincipal.name, page, size).toResponse()
+        handler.getSentLetters(
+            authorId = context.userPrincipal.name,
+            page = page,
+            size = size,
+            hearted = hearted,
+            reply = reply
+        ).toResponse()
 
+
+    /**
+     * Returns a paginated entity of LetterResponse objects
+     * which the calling entity has received - filtered by
+     * the supplied params
+     */
+    //TODO: Add sort, refactor into pageable object
     @GET
     @Path("/received")
     fun getReceivedLetters(
@@ -61,7 +92,12 @@ class LetterResource
         @QueryParam("size") size: Int,
         @Context context: SecurityContext
     ): Response =
-        handler.getReceivedLetters(context.userPrincipal.name, page, size).toResponse()
+        handler.getReceivedLetters(
+            recipientId = context.userPrincipal.name,
+            page = page,
+            size = size
+        ).toResponse()
+
 
     /**
      * Sets hearted: true
@@ -75,6 +111,7 @@ class LetterResource
     ): Response =
         handler.heartLetter(id).toResponse()
 
+
     /**
      * Sets flagged: true and deleted: true
      * Success: 204 No Content
@@ -86,6 +123,7 @@ class LetterResource
         @PathParam("id") id: String
     ): Response =
         handler.reportLetter(id).toResponse()
+
 
     /**
      * Sets readTimestamp: now

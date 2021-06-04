@@ -15,7 +15,7 @@ object ProfanityFilter {
     }
 
     /**
-     * Replaces all words that match the profanity filters with {heart}
+     * Replaces all words that match the profanity filters
      */
     fun filter(input: String): Pair<String, Boolean> {
         var output = input
@@ -39,14 +39,7 @@ object ProfanityFilter {
     }
 
     private fun getMatchingCaseReplacement(word: String, replacement: String) {
-        //TODO
-    }
-
-    private fun isAllUpperCase(word: String) : Boolean {
-        word.forEach {
-            if (!Character.isUpperCase(it)) return false
-        }
-        return true
+        TODO()
     }
 
     private fun loadFilteredWords() {

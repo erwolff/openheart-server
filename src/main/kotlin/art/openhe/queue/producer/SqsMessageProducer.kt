@@ -1,7 +1,7 @@
 package art.openhe.queue.producer
 
 import art.openhe.queue.QueueProvider
-import art.openhe.util.ext.toJsonString
+import art.openhe.util.ext.serialize
 import art.openhe.util.logger
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,7 +14,7 @@ class SqsMessageProducer
 
     fun publish(message: Any, queue: String) {
         try {
-            queueProvider.publish(queue, message.toJsonString())
+            queueProvider.publish(queue, message.serialize())
         } catch (e: Exception) {
             log.error("Error publishing message: $message", e)
         }

@@ -1,6 +1,5 @@
 package art.openhe.model
 
-import art.openhe.model.response.UserResponse
 import com.fasterxml.jackson.annotation.JsonInclude
 import org.bson.types.ObjectId
 import org.jongo.marshall.jackson.oid.MongoId

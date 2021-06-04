@@ -1,5 +1,7 @@
 package art.openhe.util
 
+import art.openhe.util.ext.toClause
+
 
 class DbUpdate
 constructor(
@@ -13,12 +15,7 @@ constructor(
     fun toQuery() =
         fieldAndValues.joinToString(prefix = updatePrefix, postfix = updatePostfix) {
             it?.let {
-                "${it.first}:" + parseValue(it.second)
+                "${it.first}:" + it.second.toClause()
             } ?: updatePrefix + updatePostfix
         }
-
-    private fun parseValue(value: Any?): String {
-        return if (value is String) "\"$value\""
-        else "$value"
-    }
 }

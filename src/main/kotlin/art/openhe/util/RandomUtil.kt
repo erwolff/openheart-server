@@ -7,7 +7,7 @@ import kotlin.random.Random
 
 object RandomUtil {
 
-    val random: Random = Random(DateTimeUtils.currentTimeMillis())
+    private val random: Random = Random(DateTimeUtils.currentTimeMillis())
 
     fun randomAvatar(): Avatar =
         Avatar.values()[random.nextInt(Avatar.values().size)]

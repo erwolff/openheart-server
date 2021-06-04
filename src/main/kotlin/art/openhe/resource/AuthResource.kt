@@ -1,6 +1,6 @@
 package art.openhe.resource
 
-import art.openhe.handler.LoginRequestHandler
+import art.openhe.handler.AuthRequestHandler
 import art.openhe.resource.filter.authentication.FirebaseAuthentication
 import art.openhe.resource.filter.authentication.RefreshTokenAuthentication
 import javax.inject.Inject
@@ -13,33 +13,47 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
-
+/**
+ * REST Resource which handles all Auth-related requests
+ */
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 @Singleton
-class LoginResource
+class AuthResource
 @Inject constructor(
-    private val handler: LoginRequestHandler
+    private val handler: AuthRequestHandler
 ) : Resource {
 
+    /**
+     * Uses FirebaseAuthentication to login a
+     * new/existing User
+     */
     @GET
     @Path("/login")
     @FirebaseAuthentication
     fun login(
         @Context context: SecurityContext
-    ): Response {
-        val principle = context.userPrincipal.name.split("::")
-        return handler.login(principle[0], principle[1]).toResponse()
-    }
+    ): Response =
+        with(context.userPrincipal.name.split("::")) {
+            handler.login(
+                googleId = this[0],
+                email = this[1]
+            ).toResponse()
+        }
 
+
+    /**
+     * Generates and returns new session/refresh tokens based on the
+     * provided security context
+     */
     @GET
     @Path("/refresh")
     @RefreshTokenAuthentication
     fun refresh(
         @Context context: SecurityContext
-    ): Response {
-        return handler.refresh(context.userPrincipal.name).toResponse()
-    }
-
-
+    ): Response =
+        handler.refresh(
+            userId = context.userPrincipal.name
+        ).toResponse()
+    
 }

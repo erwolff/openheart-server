@@ -1,6 +1,7 @@
 package art.openhe.util.ext
 
 import art.openhe.dao.criteria.ValueCriteria
+import org.bson.types.ObjectId
 
 /**
  * Returns a ValueCriteria<T> of type Eq
@@ -31,3 +32,15 @@ fun <T: Number> T.gtCriteria(): ValueCriteria<T> = ValueCriteria.gt(this)
  * Returns a ValueCriteria<T> of type Gte
  */
 fun <T: Number> T.gteCriteria(): ValueCriteria<T> = ValueCriteria.gte(this)
+
+fun <T: Any> T.toClause(): String =
+    when(this) {
+        is String -> "\"${this}\""
+        is Number -> "$this"
+        is Boolean -> "$this"
+        is ObjectId -> "{ \$oid: \"${this.toHexString()}\" }"
+        else -> throw UnsupportedOperationException("Unsupported toQuery call with type: ${this::class.java.simpleName}")
+    }
+
+fun <T: Any> Collection<T>.toClause(): String =
+    "[ ${this.joinToString(",") { it.toClause() }} ]"

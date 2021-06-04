@@ -8,10 +8,9 @@ import javax.inject.Singleton
 class LetterSanitizer {
 
     // TODO: This is just a baseline sanitization
-    fun sanitize(letter: Letter): Letter {
-        val result = ProfanityFilter.filter(letter.body)
-        return letter.clone(body = result.first, flagged = result.second)
-    }
-
+    fun sanitize(letter: Letter): Letter =
+        ProfanityFilter.filter(letter.body).let {
+            letter.clone(body = it.first, flagged = it.second)
+        }
 
 }

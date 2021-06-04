@@ -33,7 +33,7 @@ fun UserDao.find(
     lastReceivedLetterTimestamp: ValueCriteria<Long>? = null,
     lastSentLetterTimestamp: ValueCriteria<Long>? = null,
     hearts: ValueCriteria<Long>? = null
-): Page<User>? =
+): Page<User> =
     find(
         andQuery(id, googleId, email, lastReceivedLetterTimestamp, lastSentLetterTimestamp, hearts),
         page, size, sort,
@@ -49,7 +49,7 @@ private fun andQuery(
     lastSentLetterTimestamp: ValueCriteria<Long>? = null,
     hearts: ValueCriteria<Long>? = null
 ) = andQuery(
-    "id" to id,
+    "_id" to id,
     "googleId" to googleId,
     "email" to email,
     "lastReceivedLetterTimestamp" to lastReceivedLetterTimestamp,

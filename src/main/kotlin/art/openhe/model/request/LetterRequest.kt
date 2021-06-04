@@ -3,9 +3,14 @@ package art.openhe.model.request
 import art.openhe.model.Letter
 import art.openhe.model.LetterCategory
 import art.openhe.util.DbUpdate
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import org.joda.time.DateTimeUtils
 
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(NON_NULL)
 data class LetterRequest(
 
     val authorAvatar: String? = null,
@@ -20,7 +25,7 @@ data class LetterRequest(
 
 ) {
 
-    fun applyAsSave(authorId: String) =
+    fun toLetter(authorId: String) =
         Letter(
             authorId = authorId,
             authorAvatar = authorAvatar!!,

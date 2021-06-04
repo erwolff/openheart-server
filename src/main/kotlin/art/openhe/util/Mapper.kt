@@ -19,7 +19,7 @@ object Mapper {
         .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-    fun toJson(obj: Any) = mapper.convertValue(obj, JsonNode::class.java)
+    fun toJson(obj: Any): JsonNode = mapper.convertValue(obj, JsonNode::class.java)
 
     fun toJsonString(obj: Any) = toJson(obj).toString()
 

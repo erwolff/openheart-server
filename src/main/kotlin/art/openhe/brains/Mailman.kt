@@ -3,12 +3,12 @@ package art.openhe.brains
 import art.openhe.config.EnvConfig
 import art.openhe.dao.LetterDao
 import art.openhe.dao.UserDao
-import art.openhe.dao.criteria.ValueCriteria.Companion.eq
 import art.openhe.dao.ext.count
 import art.openhe.model.Letter
 import art.openhe.model.ext.isReply
 import art.openhe.model.ext.updateWith
 import art.openhe.util.DbUpdate
+import art.openhe.util.ext.eqCriteria
 import art.openhe.util.logger
 import com.google.common.annotations.VisibleForTesting
 import org.joda.time.DateTimeUtils
@@ -113,7 +113,7 @@ class Mailman
 
     @VisibleForTesting
     fun isFirstLetterByAuthor(authorId: String) =
-        letterDao.count(authorId = eq(authorId)) <= 1
+        letterDao.count(authorId = authorId.eqCriteria()) <= 1
 
     @VisibleForTesting
     fun sendWelcomeLetter(id: String, avatar: String) {

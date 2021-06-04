@@ -29,5 +29,9 @@ enum class Avatar {
     Xylophone,
     Yak,
     Zebra
-
 }
+
+fun Avatar.fromString(value: String): Avatar? =
+    Avatar.values().firstOrNull {
+        it.name.equals(value, ignoreCase = true)
+    }

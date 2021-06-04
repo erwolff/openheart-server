@@ -6,6 +6,10 @@ import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.core.SecurityContext
 
 
+/**
+ * Generates the security context with the supplied userId
+ * The UserPrincipal will be in form: "userId"
+ */
 fun ContainerRequestContext.generateSecurityContext(userId: String) {
     this.securityContext = object : SecurityContext {
         override fun getUserPrincipal(): Principal {
@@ -26,6 +30,10 @@ fun ContainerRequestContext.generateSecurityContext(userId: String) {
     }
 }
 
+/**
+ * Generates the security context with the supplied googleId and email
+ * The UserPrincipal will be in form: "googleId::email"
+ */
 fun ContainerRequestContext.generateSecurityContext(googleId: String, email: String) {
     this.securityContext = object : SecurityContext {
         override fun getUserPrincipal(): Principal {

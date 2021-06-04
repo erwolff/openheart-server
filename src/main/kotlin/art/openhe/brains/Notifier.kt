@@ -13,10 +13,10 @@ import javax.inject.Singleton
 class Notifier
 @Inject constructor(private val envConfig: EnvConfig) {
 
-    private val titleTxt = "Dear {}"
+    private val titleTxt = "Dear #"
     private val receivedLetterTxt = "A letter has found its way to you!"
     private val receivedReplyTxt = "You've received a reply to your letter!"
-    private val receivedHeartTxt = "{} has sent you a heart!"
+    private val receivedHeartTxt = "# has sent you a heart!"
     private val receivedHeartNoSenderTxt = "Your reply has received a heart!"
     private val letterFromDev = "You've received a letter from the developer!"
 
@@ -24,7 +24,7 @@ class Notifier
 
     fun receivedLetter(letterId: String, recipientId: String, recipientAvatar: String) {
         val notification = Notification.builder()
-            .setTitle(StringUtils.replace(titleTxt, "{}", recipientAvatar))
+            .setTitle(StringUtils.replace(titleTxt, "#", recipientAvatar))
             .setBody(receivedLetterTxt)
             .build()
 
@@ -33,7 +33,7 @@ class Notifier
 
     fun receivedReply(letterId: String, recipientId: String, recipientAvatar: String) {
         val notification = Notification.builder()
-            .setTitle(StringUtils.replace(titleTxt, "{}", recipientAvatar))
+            .setTitle(StringUtils.replace(titleTxt, "#", recipientAvatar))
             .setBody(receivedReplyTxt)
             .build()
 
@@ -42,8 +42,8 @@ class Notifier
 
     fun receivedHeart(letterId: String, senderAvatar: String?, recipientId: String, recipientAvatar: String) {
         val notification = Notification.builder()
-            .setTitle(StringUtils.replace(titleTxt, "{}", recipientAvatar))
-            .setBody(senderAvatar?.let {StringUtils.replace(receivedHeartTxt, "{}", it) } ?: receivedHeartNoSenderTxt)
+            .setTitle(StringUtils.replace(titleTxt, "#", recipientAvatar))
+            .setBody(senderAvatar?.let {StringUtils.replace(receivedHeartTxt, "#", it) } ?: receivedHeartNoSenderTxt)
             .build()
 
         send(notification, letterId, recipientId)
@@ -51,7 +51,7 @@ class Notifier
 
     fun welcomeLetter(recipientId: String, recipientAvatar: String, welcomeLetterId: String) {
         val notification = Notification.builder()
-            .setTitle(StringUtils.replace(titleTxt, "{}", recipientAvatar))
+            .setTitle(StringUtils.replace(titleTxt, "#", recipientAvatar))
             .setBody(letterFromDev)
             .build()
 

@@ -11,6 +11,9 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
+/**
+ * REST Resource which handles all User-related requests
+ */
 @Path("/users")
 @SessionAuthentication
 @Produces(MediaType.APPLICATION_JSON)
@@ -20,21 +23,46 @@ class UserResource
     private val handler: UserRequestHandler
 ) : Resource {
 
+    /**
+     * Returns a UserResponse representing the
+     * User object of the calling entity
+     */
     @GET
     fun getUser(
         @Context context: SecurityContext
     ): Response =
-        handler.getUser(context.userPrincipal.name).toResponse()
+        handler.getUser(
+            id = context.userPrincipal.name
+        ).toResponse()
 
+
+    /**
+     * Updates the User object of the calling
+     * entity with the supplied UserRequest and
+     * returns a UserResponse representing the
+     * updated User
+     */
     @PUT
     fun updateUser(
-        request: UserRequest, @Context context: SecurityContext
+        request: UserRequest,
+        @Context context: SecurityContext
     ): Response =
-        handler.updateUser(context.userPrincipal.name, request).toResponse()
+        handler.updateUser(
+            id = context.userPrincipal.name,
+            request = request
+        ).toResponse()
 
+
+    /**
+     * Deletes the User object of the calling
+     * entity
+     */
     @DELETE
     fun deleteUser(
         @Context context: SecurityContext
     ): Response =
-        handler.deleteUser(context.userPrincipal.name).toResponse()
+        handler.deleteUser(
+            id = context.userPrincipal.name
+        ).toResponse()
+
 }

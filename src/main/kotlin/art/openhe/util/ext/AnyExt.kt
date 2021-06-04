@@ -5,4 +5,4 @@ import art.openhe.util.Mapper
 
 fun Any.toJson() = Mapper.toJson(this)
 
-fun Any.toJsonString() = Mapper.toJsonString(this)
+fun Any.serialize() = Mapper.toJsonString(this)

@@ -1,14 +1,16 @@
 package art.openhe.brains
 
 import art.openhe.config.EnvConfig
-import art.openhe.dao.LetterDao
-import art.openhe.dao.UserDao
-import art.openhe.dao.ext.count
+import art.openhe.storage.dao.LetterDao
+import art.openhe.storage.dao.UserDao
+import art.openhe.storage.dao.ext.count
 import art.openhe.model.Letter
 import art.openhe.model.ext.isReply
 import art.openhe.model.ext.updateWith
 import art.openhe.util.DbUpdate
 import art.openhe.util.ext.eqCriteria
+import art.openhe.util.logError
+import art.openhe.util.logInfo
 import art.openhe.util.logger
 import com.google.common.annotations.VisibleForTesting
 import org.joda.time.DateTimeUtils
@@ -25,27 +27,27 @@ import javax.inject.Singleton
  */
 @Singleton
 class Mailman
-@Inject constructor(private val letterDao: LetterDao,
-                    private val userDao: UserDao,
-                    private val recipientFinder: RecipientFinder,
-                    private val notifier: Notifier,
-                    private val envConfig: EnvConfig) {
-
-    private val log = logger()
+@Inject constructor(
+    private val letterDao: LetterDao,
+    private val userDao: UserDao,
+    private val recipientFinder: RecipientFinder,
+    private val notifier: Notifier,
+    private val envConfig: EnvConfig
+) {
 
     fun mail(letter: Letter) {
         if (letter.isReply()) processReply(letter)
         else processNewLetter(letter)
 
         if (isFirstLetterByAuthor(letter.authorId)) {
-            log.info("Letter ${letter.id} is first letter written by author ${letter.authorId} - sending welcome letter")
+            logInfo { "Letter ${letter.id} is first letter written by author ${letter.authorId} - sending welcome letter" }
             sendWelcomeLetter(letter.authorId, letter.authorAvatar)
         }
     }
 
     @VisibleForTesting
     fun findRecipient(letter: Letter): Pair<String, String>? {
-        log.info("Finding recipient for letter from author ${letter.authorId}")
+        logInfo { "Finding recipient for letter from author ${letter.authorId}" }
 
         return recipientFinder.find(letter)?.let {
             it.id to it.avatar
@@ -55,14 +57,14 @@ class Mailman
     @VisibleForTesting
     fun processReply(letter: Letter) {
         if (letter.recipientId == null || letter.recipientAvatar == null) {
-            log.error("No recipientId or recipientAvatar on reply letter with parentId: ${letter.parentId} from author: ${letter.authorId}")
+            logError { "No recipientId or recipientAvatar on reply letter with parentId: ${letter.parentId} from author: ${letter.authorId}" }
             return
         }
 
         // set the childId on the original letter
         updateOriginalLetter(letter.parentId!!, letter.id)
 
-        log.info("Sending reply letter from author ${letter.authorId} to recipient ${letter.recipientId}")
+        logInfo { "Sending reply letter from author ${letter.authorId} to recipient ${letter.recipientId}" }
 
         // update the reply letter with the sentTimestamp and recipient
         updateLetter(letter, letter.recipientId, letter.recipientAvatar)
@@ -79,11 +81,11 @@ class Mailman
         val recipientAvatar = recipient?.second
 
         if (recipient == null || recipientId == null || recipientAvatar == null) {
-            log.error("Unable to find recipient for letter from author ${letter.authorId}")
+            logError { "Unable to find recipient for letter from author ${letter.authorId}" }
             return
         }
 
-        log.info("Sending new letter from author ${letter.authorId} to recipient $recipientId")
+        logInfo { "Sending new letter from author ${letter.authorId} to recipient $recipientId" }
 
         // update the recipient's lastReceivedLetterTimestamp - but only if this is not a reply
         updateRecipient(recipientId)

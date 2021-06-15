@@ -2,6 +2,7 @@ package art.openhe.queue
 
 import art.openhe.config.EnvConfig
 import art.openhe.queue.consumer.SqsMessageConsumer
+import art.openhe.util.logError
 import art.openhe.util.logger
 import com.amazon.sqs.javamessaging.ProviderConfiguration
 import com.amazon.sqs.javamessaging.SQSConnectionFactory
@@ -15,9 +16,10 @@ import javax.jms.Session
 
 @Singleton
 class QueueProvider
-@Inject constructor(private val envConfig: EnvConfig) {
+@Inject constructor(
+    private val envConfig: EnvConfig
+) {
 
-    private val log = logger()
     private val messageListeners = mutableMapOf<String, SqsMessageConsumer>()
     private val messageProducers = mutableMapOf<String, MessageProducer>()
     private var session: Session? = null
@@ -49,7 +51,7 @@ class QueueProvider
                     session?.createConsumer(it)?.messageListener = entry.value
                 }
             } catch (e: Exception) {
-                log.error("Failed to register SqsMessageListener for queue: ${entry.key}", e)
+                logError { "Failed to register SqsMessageListener for queue: ${entry.key} :: ${e.message}" }
             }
         }
     }

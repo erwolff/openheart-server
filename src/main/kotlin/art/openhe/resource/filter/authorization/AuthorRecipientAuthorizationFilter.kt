@@ -1,7 +1,6 @@
 package art.openhe.resource.filter.authorization
 
-import art.openhe.config.EnvConfig
-import art.openhe.dao.LetterDao
+import art.openhe.storage.dao.LetterDao
 import art.openhe.model.Letter
 import art.openhe.model.response.LetterErrorResponse
 import io.novocaine.Novocaine

@@ -3,9 +3,14 @@ package art.openhe.config
 import javax.inject.Singleton
 
 
+/**
+ * Reads System environment properties
+ */
 @Singleton
 class EnvConfig
-constructor(private val props: Map<String, String> = System.getenv()) {
+constructor(
+    private val props: Map<String, String> = System.getenv()
+) {
 
     fun mongoUrl(): String =
         getValue("MONGO_URL") ?: "mongodb://127.0.0.1/openheart"

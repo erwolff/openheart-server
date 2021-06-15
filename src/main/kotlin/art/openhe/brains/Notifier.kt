@@ -1,6 +1,7 @@
 package art.openhe.brains
 
 import art.openhe.config.EnvConfig
+import art.openhe.util.logInfo
 import art.openhe.util.logger
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
@@ -20,11 +21,9 @@ class Notifier
     private val receivedHeartNoSenderTxt = "Your reply has received a heart!"
     private val letterFromDev = "You've received a letter from the developer!"
 
-    private val log = logger()
-
     fun receivedLetter(letterId: String, recipientId: String, recipientAvatar: String) {
         val notification = Notification.builder()
-            .setTitle(StringUtils.replace(titleTxt, "#", recipientAvatar))
+            .setTitle(title(recipientAvatar))
             .setBody(receivedLetterTxt)
             .build()
 
@@ -33,7 +32,7 @@ class Notifier
 
     fun receivedReply(letterId: String, recipientId: String, recipientAvatar: String) {
         val notification = Notification.builder()
-            .setTitle(StringUtils.replace(titleTxt, "#", recipientAvatar))
+            .setTitle(title(recipientAvatar))
             .setBody(receivedReplyTxt)
             .build()
 
@@ -42,8 +41,8 @@ class Notifier
 
     fun receivedHeart(letterId: String, senderAvatar: String?, recipientId: String, recipientAvatar: String) {
         val notification = Notification.builder()
-            .setTitle(StringUtils.replace(titleTxt, "#", recipientAvatar))
-            .setBody(senderAvatar?.let {StringUtils.replace(receivedHeartTxt, "#", it) } ?: receivedHeartNoSenderTxt)
+            .setTitle(title(recipientAvatar))
+            .setBody(senderAvatar?.let { receivedHeartBody(it) } ?: receivedHeartNoSenderTxt)
             .build()
 
         send(notification, letterId, recipientId)
@@ -51,7 +50,7 @@ class Notifier
 
     fun welcomeLetter(recipientId: String, recipientAvatar: String, welcomeLetterId: String) {
         val notification = Notification.builder()
-            .setTitle(StringUtils.replace(titleTxt, "#", recipientAvatar))
+            .setTitle(title(recipientAvatar))
             .setBody(letterFromDev)
             .build()
 
@@ -67,6 +66,11 @@ class Notifier
 
         val messageId = FirebaseMessaging.getInstance().send(message)
 
-        log.info("Sent notification to recipient $recipientId - messageId: $messageId")
+        logInfo { "Sent notification to recipient $recipientId - messageId: $messageId" }
     }
+
+    // Helper Functions
+    
+    val title = { recipientAvatar: String -> StringUtils.replace(titleTxt, "#", recipientAvatar) }
+    val receivedHeartBody = { senderAvatar: String -> StringUtils.replace(receivedHeartTxt, "#", senderAvatar) }
 }

@@ -1,5 +1,6 @@
-package art.openhe.cache
+package art.openhe.storage.cache
 
+import art.openhe.storage.Storage
 import org.apache.commons.lang3.StringUtils
 import org.joda.time.DateTimeUtils
 import redis.clients.jedis.params.SetParams
@@ -9,7 +10,9 @@ import javax.inject.Singleton
 
 @Singleton
 class Cache
-@Inject constructor(private val jedisRetryer: JedisRetryer) {
+@Inject constructor(
+    private val jedisRetryer: JedisRetryer
+) : Storage {
 
     companion object {
         val defaultExpSeconds = TimeUnit.MINUTES.toSeconds(30).toInt()

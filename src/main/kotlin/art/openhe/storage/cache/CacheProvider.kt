@@ -1,6 +1,7 @@
-package art.openhe.cache
+package art.openhe.storage.cache
 
 import art.openhe.config.EnvConfig
+import art.openhe.util.logInfo
 import art.openhe.util.logger
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
@@ -14,7 +15,6 @@ class CacheProvider {
     private val CONNECTION_TIMEOUT = 2000
     private val SOCKET_TIMEOUT = 2000
 
-    private val log = logger()
     private var jedisPool: JedisPool? = null
 
     @Singleton
@@ -27,7 +27,7 @@ class CacheProvider {
     }
 
     private fun init(envConfig: EnvConfig) {
-        log.info("Initializing JedisPool")
+        logInfo { "Initializing JedisPool" }
         val config = JedisPoolConfig()
         config.maxTotal = 4
 

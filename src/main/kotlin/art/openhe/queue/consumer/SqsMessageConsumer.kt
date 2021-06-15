@@ -1,6 +1,6 @@
 package art.openhe.queue.consumer
 
-import art.openhe.cache.Cache
+import art.openhe.storage.cache.Cache
 import art.openhe.queue.QueueProvider
 import art.openhe.util.logger
 import javax.inject.Inject

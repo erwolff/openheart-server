@@ -1,6 +1,6 @@
 package art.openhe.resource.filter.authentication
 
-import art.openhe.cache.Cache
+import art.openhe.storage.cache.Cache
 import art.openhe.util.ext.generateSecurityContext
 import io.novocaine.Novocaine
 import javax.annotation.Priority

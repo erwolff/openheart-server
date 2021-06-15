@@ -12,7 +12,6 @@ inline fun <reified T> T.logger(): Logger {
 }
 
 fun Any.logError(message: () -> String): Unit =
-
     LoggerFactory.getLogger(this::class.java.simpleName).error(message())
 
 

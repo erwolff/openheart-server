@@ -9,6 +9,6 @@ package art.openhe.resource
  * Top Down Hierarchy:
  *      Resource
  *      Handler -> Validator
- *      Dao
+ *      Storage
  */
 interface Resource

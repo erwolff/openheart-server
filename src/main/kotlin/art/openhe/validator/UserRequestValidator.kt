@@ -1,6 +1,6 @@
 package art.openhe.validator
 
-import art.openhe.dao.UserDao
+import art.openhe.storage.dao.UserDao
 import art.openhe.model.Avatar
 import art.openhe.model.request.UserRequest
 import art.openhe.model.response.UserErrorResponse

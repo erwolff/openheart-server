@@ -9,9 +9,11 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import java.lang.Exception
 
 
+/**
+ * Wrapper class for Jackson ObjectMapper
+ * Configures the ObjectMapper specifically for this project
+ */
 object Mapper {
-
-    private val log = logger()
 
     private val mapper: ObjectMapper = ObjectMapper()
         .registerModule(Jdk8Module())
@@ -27,7 +29,7 @@ object Mapper {
         try {
             mapper.readValue(json, toClass)
         } catch (e: Exception) {
-            log.error("Unable to convert string: $json to class of type: ${toClass.simpleName}", e)
+            logError { "Unable to convert string: $json to class of type: ${toClass.simpleName} :: ${e.message}" }
             null
         }
 

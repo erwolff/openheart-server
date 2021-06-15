@@ -1,8 +1,9 @@
-package art.openhe.dao.ext
+package art.openhe.storage.dao.ext
 
-import art.openhe.dao.Dao
-import art.openhe.dao.criteria.Sort
-import art.openhe.dao.criteria.ValueCriteria
+import art.openhe.storage.dao.Dao
+import art.openhe.storage.dao.criteria.Pageable
+import art.openhe.storage.dao.criteria.Sort
+import art.openhe.storage.dao.criteria.ValueCriteria
 import art.openhe.model.DbObject
 import art.openhe.model.Page
 import art.openhe.util.ext.runQuery
@@ -22,19 +23,19 @@ fun <T> Dao.findOne(query: String, sort: Sort?, clazz: Class<T>): T? =
         collection.runQuery { it.findOne(query).`as`(clazz) }
 
 
-fun <T: DbObject> Dao.find(query: String, page: Int, size: Int, sort: Sort, clazz: Class<T>): Page<T> {
+fun <T: DbObject> Dao.find(query: String, pageable: Pageable, clazz: Class<T>): Page<T> {
     val totalResults = count(query)
 
     val results = collection.runQuery {
         it.find(query)
-            .sort(sort.toSort())
-            .skip(if (page == 0) 0 else page.minus(1) * size)
-            .limit(size)
+            .sort(pageable.sort.toSort())
+            .skip(pageable.skip)
+            .limit(pageable.size)
             .`as`(clazz)
     }
 
     return results?.let {
-        Page(it.toList(), page, size, totalResults, ceil(totalResults / size.toDouble()).toInt())
+        Page(it.toList(), pageable.page, pageable.size, totalResults, ceil(totalResults / pageable.size.toDouble()).toInt())
     } ?: noResults()
 }
 

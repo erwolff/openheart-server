@@ -8,13 +8,13 @@ import art.openhe.model.response.asSuccess
  * Marker interface for any request handler
  *
  * The Handler layer serves requests received by the Resource layer
- * and interacts with the Validator and Dao layers (and serves responses
+ * and interacts with the Validator and Storage layers (and serves responses
  * back to the Resource layer as necessary)
  *
  * Top Down Hierarchy:
  *      Resource
  *      Handler -> Validator
- *      Dao
+ *      Storage
  */
 interface Handler {
 

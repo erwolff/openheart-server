@@ -1,7 +1,6 @@
 package art.openhe.handler
 
-import art.openhe.dao.UserDao
-import art.openhe.model.request.LetterRequest
+import art.openhe.storage.dao.UserDao
 import art.openhe.model.request.UserRequest
 import art.openhe.model.response.*
 import art.openhe.util.DbUpdate
@@ -12,7 +11,7 @@ import javax.ws.rs.core.Response
 
 /**
  * Handles all UserRequest-related operations
- * Interacts with the Validator and Dao layers
+ * Interacts with the Validator and Storage layers
  * Returns HandlerResult objects to indicate success/failure
  */
 @Singleton

@@ -1,5 +1,6 @@
-package art.openhe.cache
+package art.openhe.storage.cache
 
+import art.openhe.util.logError
 import art.openhe.util.logger
 import com.github.rholder.retry.RetryerBuilder
 import com.github.rholder.retry.StopStrategies
@@ -11,10 +12,11 @@ import javax.inject.Singleton
 
 @Singleton
 class JedisRetryer
-@Inject constructor(@Named("jedisPool") private val jedisPool: JedisPool) {
+@Inject constructor(
+    @Named("jedisPool") private val jedisPool: JedisPool
+) {
 
     private val numRetries = 4
-    private val log = logger()
 
     private val stringRetryer = RetryerBuilder.newBuilder<String>()
         .retryIfException()
@@ -34,7 +36,7 @@ class JedisRetryer
                 }
             }
         } catch (e: Exception) {
-            log.error("redis retry failed", e)
+            logError { "redis retry failed :: ${e.message}" }
             throw RuntimeException(e)
         }
 
@@ -46,7 +48,7 @@ class JedisRetryer
                 }
             }
         } catch (e: Exception) {
-            log.error("redis retry failed", e)
+            logError { "redis retry failed :: ${e.message}" }
             throw RuntimeException(e)
         }
 

@@ -1,8 +1,7 @@
-package art.openhe.dao.criteria
+package art.openhe.storage.dao.criteria
 
 import art.openhe.util.ext.toClause
 import org.apache.commons.collections4.CollectionUtils
-import org.bson.types.ObjectId
 
 
 sealed class ValueCriteria<T: Any> {

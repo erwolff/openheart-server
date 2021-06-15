@@ -1,12 +1,10 @@
-package art.openhe.dao.ext
+package art.openhe.storage.dao.ext
 
-import art.openhe.dao.LetterDao
-import art.openhe.dao.criteria.*
+import art.openhe.storage.dao.LetterDao
+import art.openhe.storage.dao.criteria.*
 import art.openhe.model.Letter
 import art.openhe.model.Page
-import art.openhe.util.ext.runQuery
 import org.bson.types.ObjectId
-import kotlin.math.ceil
 
 
 fun LetterDao.findOne(
@@ -28,9 +26,7 @@ fun LetterDao.findOne(
 
 
 fun LetterDao.find(
-    page: Int,
-    size: Int,
-    sort: Sort,
+    pageable: Pageable,
     id: ValueCriteria<ObjectId>? = null,
     authorId: ValueCriteria<String>? = null,
     recipientId: ValueCriteria<String>? = null,
@@ -41,7 +37,7 @@ fun LetterDao.find(
 ): Page<Letter> =
     find(
         andQuery(id, authorId, recipientId, parentId, childId, hearted, deleted),
-        page, size, sort,
+        pageable,
         Letter::class.java
     )
 

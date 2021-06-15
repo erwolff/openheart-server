@@ -6,6 +6,7 @@ import art.openhe.queue.QueueProvider
 import art.openhe.queue.consumer.SqsMessageConsumer
 import art.openhe.resource.HealthCheckResource
 import art.openhe.resource.Resource
+import art.openhe.util.logInfo
 import art.openhe.util.logger
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
@@ -18,17 +19,17 @@ import org.reflections.scanners.SubTypesScanner
 import org.reflections.scanners.TypeAnnotationsScanner
 import javax.ws.rs.container.ContainerRequestFilter
 
-
+/**
+ * Entrypoint for the Openheart-server application
+ */
 fun main(args: Array<String>) {
     App().run(*args)
 }
 
 class App : Application<OpenHeartConfig>() {
 
-    private val log = logger()
-
     override fun run(configuration: OpenHeartConfig, environment: Environment) {
-        log.info("Running ${configuration.name}")
+        logInfo { "Running ${configuration.name}" }
         Novocaine.inject(this)
         // TODO: Add support for something similar to Spring's @PostConstruct into Novocaine then move the below:
         registerResources(configuration, environment)

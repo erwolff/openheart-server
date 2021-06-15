@@ -1,6 +1,6 @@
-package art.openhe.dao
+package art.openhe.storage.dao
 
-import art.openhe.model.User
+import art.openhe.model.Letter
 import art.openhe.util.DbUpdate
 import art.openhe.util.ext.asObjectId
 import art.openhe.util.ext.positiveCountOrNull
@@ -12,35 +12,35 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-class UserDao
+class LetterDao
 @Inject constructor(
-    @Named("users") collection: MongoCollection
+    @Named("letters") collection: MongoCollection
 ) : Dao(collection) {
 
 
-    fun save(user: User): User? =
-        user.id.asObjectId?.let {
-            collection.runQuery { it.save(user)?.let { findById(user.id) } }
+    fun save(letter: Letter): Letter? =
+        letter.id.asObjectId?.let {
+            collection.runQuery { it.save(letter)?.let { findById(letter.id) } }
         }
 
 
-    fun update(dbUpdate: DbUpdate): User? =
+    fun update(dbUpdate: DbUpdate): Letter? =
         dbUpdate.id.asObjectId?.let { oid ->
             collection.runQuery {
                 it.findAndModify(Oid.withOid(oid.toHexString()))
                     .with(dbUpdate.toQuery())
-                    .returnNew().`as`(User::class.java) }
+                    .returnNew().`as`(Letter::class.java) }
         }
 
 
     fun delete(id: String): Int =
         id.asObjectId?.let { oid ->
-            collection.runQuery { it.remove(oid).positiveCountOrNull() }
+            collection.runQuery { it.remove(oid)?.positiveCountOrNull() }
         } ?: 0
 
 
-    fun findById(id: String): User? =
+    fun findById(id: String): Letter? =
         id.asObjectId?.let { oid ->
-            collection.runQuery { it.findOne(oid).`as`(User::class.java) }
+            collection.runQuery { it.findOne(oid).`as`(Letter::class.java) }
         }
 }

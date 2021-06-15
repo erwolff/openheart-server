@@ -1,32 +1,34 @@
 package art.openhe.brains
 
-import art.openhe.dao.LetterDao
+import art.openhe.storage.dao.LetterDao
 import art.openhe.model.Letter
 import art.openhe.model.ext.updateWith
+import art.openhe.util.logInfo
 import art.openhe.util.logger
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class LetterPreviewer
-@Inject constructor(private val letterDao: LetterDao) {
-
-    private val log = logger()
+@Inject constructor(
+    private val letterDao: LetterDao
+) {
 
     fun process(letter: Letter) {
-        if (letter.parentId == null) {
-            return
+        letter.parentId?.let(findParentLetter)?.let { parent ->
+            logInfo { "Updating parentPreview of letter ${letter.id}" }
+            letterDao.update(letter.updateWith("parentPreview" to preview(parent)))
+
+            logInfo { "Updating childPreview of letter ${parent.id}" }
+            letterDao.update(parent.updateWith("childPreview" to preview(letter)))
         }
+    }
 
-        val parent = letterDao.findById(letter.parentId) ?: return
+    // Helper Functions
 
-        val parentPreview = parent.body.substring(0, minOf(parent.body.length, 280))
-        val childPreview = letter.body.substring(0, minOf(letter.body.length, 280))
+    private val findParentLetter = { parentId: String -> letterDao.findById(parentId) }
 
-        log.info("Updating parentPreview of letter ${letter.id}")
-        letterDao.update(letter.updateWith("parentPreview" to parentPreview))
-
-        log.info("Updating childPreview of letter ${parent.id}")
-        letterDao.update(parent.updateWith("childPreview" to childPreview))
+    companion object {
+        private val preview = { letter: Letter -> letter.body.substring(0, minOf(letter.body.length, 280)) }
     }
 }

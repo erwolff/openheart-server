@@ -1,4 +1,4 @@
-package art.openhe.dao
+package art.openhe.storage.dao
 
 import art.openhe.config.EnvConfig
 import com.fasterxml.jackson.module.kotlin.KotlinModule

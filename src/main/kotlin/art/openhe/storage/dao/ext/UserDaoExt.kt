@@ -1,7 +1,7 @@
-package art.openhe.dao.ext
+package art.openhe.storage.dao.ext
 
-import art.openhe.dao.UserDao
-import art.openhe.dao.criteria.*
+import art.openhe.storage.dao.UserDao
+import art.openhe.storage.dao.criteria.*
 import art.openhe.model.Page
 import art.openhe.model.User
 import org.bson.types.ObjectId
@@ -24,9 +24,7 @@ fun UserDao.findOne(
 
 
 fun UserDao.find(
-    page: Int,
-    size: Int,
-    sort: Sort,
+    pageable: Pageable,
     id: ValueCriteria<ObjectId>? = null,
     googleId: ValueCriteria<String>? = null,
     email: ValueCriteria<String>? = null,
@@ -36,7 +34,7 @@ fun UserDao.find(
 ): Page<User> =
     find(
         andQuery(id, googleId, email, lastReceivedLetterTimestamp, lastSentLetterTimestamp, hearts),
-        page, size, sort,
+        pageable,
         User::class.java
     )
 

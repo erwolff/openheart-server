@@ -2,13 +2,14 @@ package art.openhe.handler
 
 import art.openhe.brains.LetterSanitizer
 import art.openhe.brains.Notifier
-import art.openhe.dao.LetterDao
-import art.openhe.dao.UserDao
-import art.openhe.dao.criteria.Sort
-import art.openhe.dao.criteria.ValueCriteria.Companion.isFalse
-import art.openhe.dao.criteria.ValueCriteria.Companion.isNotNull
-import art.openhe.dao.criteria.ValueCriteria.Companion.isNull
-import art.openhe.dao.ext.find
+import art.openhe.storage.dao.LetterDao
+import art.openhe.storage.dao.UserDao
+import art.openhe.storage.dao.criteria.Pageable
+import art.openhe.storage.dao.criteria.Sort
+import art.openhe.storage.dao.criteria.ValueCriteria.Companion.isFalse
+import art.openhe.storage.dao.criteria.ValueCriteria.Companion.isNotNull
+import art.openhe.storage.dao.criteria.ValueCriteria.Companion.isNull
+import art.openhe.storage.dao.ext.find
 import art.openhe.model.Letter
 import art.openhe.model.request.LetterRequest
 import art.openhe.model.response.*
@@ -24,7 +25,7 @@ import javax.ws.rs.core.Response
 
 /**
  * Handles all LetterRequest-related operations
- * Interacts with the Validator and Dao layers
+ * Interacts with the Validator and Storage layers
  * Returns HandlerResult objects to indicate success/failure
  */
 @Singleton
@@ -94,9 +95,7 @@ class LetterRequestHandler
 
         else
             letterDao.find(
-                page = page,
-                size = size,
-                sort = Sort.Letters.byWrittenTimestampDesc(),
+                pageable = Pageable(page, size, Sort.Letters.byWrittenTimestampDesc()),
                 authorId = authorId.eqCriteria(),
                 hearted = hearted?.eqCriteria(),
                 parentId = if (reply == true) isNotNull() else isNull()
@@ -120,9 +119,7 @@ class LetterRequestHandler
 
         else
             letterDao.find(
-                page = page,
-                size = size,
-                sort = Sort.Letters.bySentTimestampDesc(),
+                pageable = Pageable(page, size, Sort.Letters.bySentTimestampDesc()),
                 recipientId = recipientId.eqCriteria(),
                 deleted = isFalse()
             ).asPageResponse { it.toLetterResponse() }.asSuccess()
@@ -135,7 +132,7 @@ class LetterRequestHandler
      * Failure: Returns a LetterErrorResponse with status NOT_FOUND
      */
     fun heartLetter(id: String): HandlerResult<EmptyResponse, LetterErrorResponse> =
-        updateLetter(DbUpdate(id, "hearted" to true))
+        updateLetter(setHeartedToTrue(id))
             ?.apply(notifyReceivedHeart)?.toEmptyResponse()?.asSuccess()
             ?: letterNotFoundError(id)
 
@@ -147,7 +144,7 @@ class LetterRequestHandler
      * Failure: Returns a LetterErrorResponse with status NOT_FOUND
      */
     fun reportLetter(id: String): HandlerResult<EmptyResponse, LetterErrorResponse> =
-        updateLetter(DbUpdate(id, "flagged" to true, "deleted" to true))?.toEmptyResponse()?.asSuccess()
+        updateLetter(setFlaggedAndDeletedToTrue(id))?.toEmptyResponse()?.asSuccess()
             ?: letterNotFoundError(id)
 
 
@@ -158,7 +155,7 @@ class LetterRequestHandler
      * Failure: Returns a LetterErrorResponse with status NOT_FOUND
      */
     fun markAsRead(id: String): HandlerResult<EmptyResponse, LetterErrorResponse> =
-        updateLetter(DbUpdate(id, "readTimestamp" to DateTimeUtils.currentTimeMillis()))?.toEmptyResponse()?.asSuccess()
+        updateLetter(setReadTimestampToNow(id))?.toEmptyResponse()?.asSuccess()
             ?: letterNotFoundError(id)
 
 
@@ -169,9 +166,8 @@ class LetterRequestHandler
      * Failure: Returns a LetterErrorResponse with status NOT_FOUND
      */
     fun deleteLetter(id: String): HandlerResult<EmptyResponse, LetterErrorResponse> =
-        updateLetter(DbUpdate(id, "deleted" to true))?.toEmptyResponse()?.asSuccess()
+        updateLetter(setDeletedToTrue(id))?.toEmptyResponse()?.asSuccess()
             ?: letterNotFoundError(id)
-
 
 
     // Helper Functions
@@ -206,6 +202,10 @@ class LetterRequestHandler
     companion object {
         private val invalidPageError = PageErrorResponse(Response.Status.BAD_REQUEST, page = "Supplied page must be greater than 0").asPageFailure()
         private val letterNotFoundError = { id: String -> LetterErrorResponse(Response.Status.NOT_FOUND, id = "A letter with id $id does not exist").asFailure() }
+        private val setHeartedToTrue = { id: String -> DbUpdate(id, "hearted" to true) }
+        private val setDeletedToTrue = { id: String -> DbUpdate(id, "deleted" to true) }
+        private val setReadTimestampToNow = { id: String -> DbUpdate(id, "readTimestamp" to DateTimeUtils.currentTimeMillis()) }
+        private val setFlaggedAndDeletedToTrue = { id: String -> DbUpdate(id, "flagged" to true, "deleted" to true) }
     }
 
 

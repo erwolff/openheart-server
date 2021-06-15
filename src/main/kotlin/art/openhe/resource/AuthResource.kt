@@ -1,6 +1,7 @@
 package art.openhe.resource
 
 import art.openhe.handler.AuthRequestHandler
+import art.openhe.model.LoginCredentials
 import art.openhe.resource.filter.authentication.FirebaseAuthentication
 import art.openhe.resource.filter.authentication.RefreshTokenAuthentication
 import javax.inject.Inject
@@ -35,10 +36,10 @@ class AuthResource
         @Context context: SecurityContext
     ): Response =
         with(context.userPrincipal.name.split("::")) {
-            handler.login(
+            handler.login(LoginCredentials(
                 googleId = this[0],
                 email = this[1]
-            ).toResponse()
+            )).toResponse()
         }
 
 

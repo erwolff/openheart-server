@@ -1,6 +1,6 @@
 package art.openhe.util.ext
 
-import art.openhe.dao.criteria.ValueCriteria
+import art.openhe.storage.dao.criteria.ValueCriteria
 import org.bson.types.ObjectId
 
 /**

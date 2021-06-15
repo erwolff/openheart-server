@@ -1,6 +1,6 @@
 package art.openhe.model.response
 
-import art.openhe.cache.Cache
+import art.openhe.storage.cache.Cache
 import org.joda.time.DateTimeUtils
 import java.util.*
 import java.util.concurrent.TimeUnit

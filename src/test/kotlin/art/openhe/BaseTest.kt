@@ -3,8 +3,8 @@ package art.openhe
 import art.openhe.brains.Notifier
 import art.openhe.brains.RecipientFinder
 import art.openhe.config.EnvConfig
-import art.openhe.dao.LetterDao
-import art.openhe.dao.UserDao
+import art.openhe.storage.dao.LetterDao
+import art.openhe.storage.dao.UserDao
 import art.openhe.model.Letter
 import art.openhe.model.LetterCategory
 import art.openhe.model.User

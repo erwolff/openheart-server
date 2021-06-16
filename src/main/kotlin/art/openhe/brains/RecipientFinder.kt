@@ -14,7 +14,9 @@ import javax.inject.Singleton
  */
 @Singleton
 class RecipientFinder
-@Inject constructor(private val userDao: UserDao) {
+@Inject constructor(
+    private val userDao: UserDao
+) {
 
     //TODO: We'll want to do some more stuff here, but this is the basic implementation
     fun find(letter: Letter): User? =

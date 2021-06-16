@@ -3,7 +3,6 @@ package art.openhe.queue
 import art.openhe.config.EnvConfig
 import art.openhe.queue.consumer.SqsMessageConsumer
 import art.openhe.util.logError
-import art.openhe.util.logger
 import com.amazon.sqs.javamessaging.ProviderConfiguration
 import com.amazon.sqs.javamessaging.SQSConnectionFactory
 import com.amazonaws.auth.AWSStaticCredentialsProvider
@@ -51,7 +50,7 @@ class QueueProvider
                     session?.createConsumer(it)?.messageListener = entry.value
                 }
             } catch (e: Exception) {
-                logError { "Failed to register SqsMessageListener for queue: ${entry.key} :: ${e.message}" }
+                logError(e) { "Failed to register SqsMessageListener for queue: ${entry.key}" }
             }
         }
     }

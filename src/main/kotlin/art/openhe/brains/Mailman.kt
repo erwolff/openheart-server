@@ -11,7 +11,6 @@ import art.openhe.util.DbUpdate
 import art.openhe.util.ext.eqCriteria
 import art.openhe.util.logError
 import art.openhe.util.logInfo
-import art.openhe.util.logger
 import com.google.common.annotations.VisibleForTesting
 import org.joda.time.DateTimeUtils
 import javax.inject.Inject

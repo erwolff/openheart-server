@@ -2,7 +2,7 @@ package art.openhe.queue.consumer
 
 import art.openhe.storage.cache.Cache
 import art.openhe.queue.QueueProvider
-import art.openhe.util.logger
+import art.openhe.util.logError
 import javax.inject.Inject
 import javax.jms.Message
 import javax.jms.MessageListener
@@ -16,8 +16,6 @@ abstract class SqsMessageConsumer : MessageListener {
 
     abstract val queueName: String
 
-    private val log = logger()
-
     fun register() {
         queueProvider.registerConsumer(queueName, this)
     }
@@ -30,12 +28,12 @@ abstract class SqsMessageConsumer : MessageListener {
                 }
             }
         } catch (e: Exception) {
-            log.error("Error processing message: ${message.toString()}", e)
+            logError(e) { "Error processing message: ${message.toString()}" }
         } finally {
             try {
                 message?.acknowledge()
             } catch (e: Exception) {
-                log.error("Error acknowledging message: ${message.toString()}", e)
+                logError(e) { "Error acknowledging message: ${message.toString()}" }
             }
         }
     }

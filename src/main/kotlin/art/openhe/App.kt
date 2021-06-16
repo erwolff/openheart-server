@@ -7,7 +7,6 @@ import art.openhe.queue.consumer.SqsMessageConsumer
 import art.openhe.resource.HealthCheckResource
 import art.openhe.resource.Resource
 import art.openhe.util.logInfo
-import art.openhe.util.logger
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions

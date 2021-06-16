@@ -2,7 +2,6 @@ package art.openhe.storage.cache
 
 import art.openhe.config.EnvConfig
 import art.openhe.util.logInfo
-import art.openhe.util.logger
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import redis.clients.jedis.util.JedisURIHelper

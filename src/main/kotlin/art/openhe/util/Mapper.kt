@@ -29,7 +29,7 @@ object Mapper {
         try {
             mapper.readValue(json, toClass)
         } catch (e: Exception) {
-            logError { "Unable to convert string: $json to class of type: ${toClass.simpleName} :: ${e.message}" }
+            logError(e) { "Unable to convert string: $json to class of type: ${toClass.simpleName}" }
             null
         }
 

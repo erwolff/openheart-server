@@ -4,7 +4,6 @@ import art.openhe.storage.dao.LetterDao
 import art.openhe.model.Letter
 import art.openhe.model.ext.updateWith
 import art.openhe.util.logInfo
-import art.openhe.util.logger
 import javax.inject.Inject
 import javax.inject.Singleton
 

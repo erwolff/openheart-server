@@ -1,7 +1,6 @@
 package art.openhe.storage.cache
 
 import art.openhe.util.logError
-import art.openhe.util.logger
 import com.github.rholder.retry.RetryerBuilder
 import com.github.rholder.retry.StopStrategies
 import redis.clients.jedis.Jedis
@@ -36,7 +35,7 @@ class JedisRetryer
                 }
             }
         } catch (e: Exception) {
-            logError { "redis retry failed :: ${e.message}" }
+            logError(e) { "redis retry failed" }
             throw RuntimeException(e)
         }
 
@@ -48,7 +47,7 @@ class JedisRetryer
                 }
             }
         } catch (e: Exception) {
-            logError { "redis retry failed :: ${e.message}" }
+            logError(e) { "redis retry failed" }
             throw RuntimeException(e)
         }
 

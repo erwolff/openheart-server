@@ -4,20 +4,17 @@ import art.openhe.BaseTest
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class MailmanTest : BaseTest() {
 
-    @InjectMockKs
-    lateinit var mailman: Mailman
-
     @Test
     fun test_mail_withParentId_processesAsReply() {
         Given("A letter with valid parentId") {
             val mailman = spy()
-            every { letter.parentId } returns "parentId"
             every { mailman.processReply(any()) } returns Unit // do nothing
             every { mailman.isFirstLetterByAuthor(any()) } returns false
 
@@ -37,7 +34,7 @@ internal class MailmanTest : BaseTest() {
     fun test_mail_noParentId_processesAsNewLetter() {
         Given("A letter without a parentId") {
             val mailman = spy()
-            every { letter.parentId } returns ""
+            val letter = letter.clone(parentId = "")
             every { mailman.processNewLetter(any()) } returns Unit // do nothing
             every { mailman.isFirstLetterByAuthor(any()) } returns false
 
@@ -91,6 +88,7 @@ internal class MailmanTest : BaseTest() {
     @Test
     fun test_findRecipient_noneFound_returnsNull() {
         Given("A letter to find a recipient for") {
+            val mailman = spy()
             every { recipientFinder.find(any()) } returns null
 
             When("RecipientFinder is unable to find a recipient") {
@@ -106,6 +104,7 @@ internal class MailmanTest : BaseTest() {
     @Test
     fun test_findRecipient_returnsFoundRecipient() {
         Given("A letter to find a recipient for") {
+            val mailman = spy()
             every { recipientFinder.find(any()) } returns user
 
             When("RecipientFinder finds a recipient") {
@@ -113,8 +112,8 @@ internal class MailmanTest : BaseTest() {
 
                 Then("The found user id and avatar should be returned") {
                     assertNotNull(actual)
-                    assertEquals(actual!!.first, user.id)
-                    assertEquals(actual.second, user.avatar)
+                    assertEquals(user.id, actual!!.first)
+                    assertEquals(user.avatar, actual.second)
                 }
             }
         }
@@ -124,7 +123,7 @@ internal class MailmanTest : BaseTest() {
     fun test_processReply_noRecipientId() {
         Given("A letter to process as reply with no recipientId") {
             val mailman = spy()
-            every { letter.recipientId } returns null
+            val letter = letter.clone(recipientId = "")
             every { mailman.updateOriginalLetter(any(), any()) } returns null
             every { mailman.updateLetter(any(), any(), any()) } returns null
             every { notifier.receivedReply(any(), any(), any()) } returns Unit // do nothing

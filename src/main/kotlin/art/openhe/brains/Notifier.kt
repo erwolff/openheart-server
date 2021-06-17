@@ -85,11 +85,11 @@ class Notifier {
     val receivedHeartBody = { senderAvatar: String? -> senderAvatar?.let { StringUtils.replace(receivedHeartTxt, "#", it) } ?: receivedHeartNoSenderTxt }
 
     companion object {
-        private const val titleTxt = "Dear #"
-        private const val receivedLetterTxt = "A letter has found its way to you!"
-        private const val receivedReplyTxt = "You've received a reply to your letter!"
-        private const val receivedHeartTxt = "# has sent you a heart!"
-        private const val receivedHeartNoSenderTxt = "Your reply has received a heart!"
-        private const val letterFromDev = "You've received a letter from the developer!"
+        internal const val titleTxt = "Dear #"
+        internal const val receivedLetterTxt = "A letter has found its way to you!"
+        internal const val receivedReplyTxt = "You've received a reply to your letter!"
+        internal const val receivedHeartTxt = "# has sent you a heart!"
+        internal const val receivedHeartNoSenderTxt = "Your reply has received a heart!"
+        internal const val letterFromDev = "You've received a letter from the developer!"
     }
 }

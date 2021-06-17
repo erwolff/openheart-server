@@ -1,5 +1,6 @@
 package art.openhe
 
+import art.openhe.brains.Mailman
 import art.openhe.brains.Notifier
 import art.openhe.brains.RecipientFinder
 import art.openhe.config.EnvConfig
@@ -15,6 +16,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import org.bson.types.ObjectId
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.slf4j.Logger.ROOT_LOGGER_NAME
@@ -27,9 +29,10 @@ internal open class BaseTest {
     protected val userDao: UserDao = mockk(relaxed = true, relaxUnitFun = true)
     protected val recipientFinder: RecipientFinder = mockk(relaxed = true, relaxUnitFun = true)
     protected val notifier: Notifier = mockk(relaxed = true, relaxUnitFun = true)
+    protected var mailman: Mailman = mockk(relaxed = true, relaxUnitFun = true)
     protected val envConfig: EnvConfig = mockk(relaxed = true, relaxUnitFun = true)
-    protected val letter: Letter = mockk()
-    protected val user: User = mockk()
+    protected val letter = letter()
+    protected val user = user()
 
     @BeforeAll
     fun beforeAll() {
@@ -41,30 +44,31 @@ internal open class BaseTest {
     @BeforeEach
     fun beforeEach() {
         clearAllMocks()
-        resetLetterMock()
-        resetUserMock()
     }
 
-    private fun resetLetterMock() {
-        every { letter.id } returns "id"
-        every { letter.authorId } returns "authorId"
-        every { letter.authorAvatar } returns "authorAvatar"
-        every { letter.recipientId } returns "recipientId"
-        every { letter.recipientAvatar } returns "recipientAvatar"
-        every { letter.parentId } returns "parentId"
-        every { letter.childId } returns "childId"
-        every { letter.parentPreview } returns "parentPreview"
-        every { letter.childPreview } returns "childPreview"
-        every { letter.category } returns LetterCategory.THOUGHT
-        every { letter.body } returns "body"
-    }
+    protected fun letter() =
+        Letter(
+            id = ObjectId().toHexString(),
+            authorId = "authorId",
+            authorAvatar = "authorAvatar",
+            recipientId = "recipientId",
+            recipientAvatar = "recipientAvatar",
+            parentId = "parentId",
+            childId = "childId",
+            parentPreview = "parentPreview",
+            childPreview = "childPreview",
+            category = LetterCategory.THOUGHT,
+            body = "body"
+        )
 
-    private fun resetUserMock() {
-        every { user.id } returns "id"
-        every { user.email } returns "email"
-        every { user.googleId } returns "googleId"
-        every { user.avatar } returns "avatar"
-    }
+    protected fun user() =
+        User(
+            id = ObjectId().toHexString(),
+            email = "email",
+            googleId = "googleId",
+            avatar = "avatar"
+        )
+
 
     protected inner class Given(msg: String, function: () -> Unit) {
         init { logAndInvoke("GIVEN: $msg", function) }

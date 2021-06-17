@@ -25,9 +25,6 @@ class LetterPreviewer
 
     // Helper Functions
 
-    private val findParentLetter = { parentId: String -> letterDao.findById(parentId) }
-
-    companion object {
-        private val preview = { letter: Letter -> letter.body.substring(0, minOf(letter.body.length, 280)) }
-    }
+    internal val findParentLetter: (String) -> Letter? = { parentId: String -> letterDao.findById(parentId) }
+    internal val preview = { letter: Letter -> letter.body.substring(0, minOf(letter.body.length, 280)) }
 }

@@ -55,7 +55,7 @@ class Mailman
 
     @VisibleForTesting
     fun processReply(letter: Letter) {
-        if (letter.recipientId == null || letter.recipientAvatar == null) {
+        if (letter.recipientId.isNullOrEmpty() || letter.recipientAvatar.isNullOrEmpty()) {
             logError { "No recipientId or recipientAvatar on reply letter with parentId: ${letter.parentId} from author: ${letter.authorId}" }
             return
         }
